@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Cuenta - Dashboard</title>
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Se ha diseñado un dashboard con una estructura de dos columnas en pantallas grandes (y una sola columna en móviles) para separar claramente la información de un vistazo de las acciones de gestión. La columna principal (izquierda) contiene un saludo y el estado del pedido más reciente, seguido de un historial de pedidos y un gráfico de gastos, respondiendo a las preguntas más comunes del usuario ("¿dónde está mi pedido?" y "¿qué he comprado?"). La columna secundaria (derecha) actúa como un centro de navegación y soporte permanente, con "Acciones Rápidas" y "Ayuda" siempre visibles. Esta separación reduce la carga cognitiva, ya que el usuario no tiene que buscar las opciones de gestión. Los detalles de la cuenta se manejan en una vista separada que se activa desde las acciones rápidas, manteniendo el dashboard principal limpio y enfocado en la información más relevante del día a día. Esta arquitectura está pensada para la máxima usabilidad y claridad para un público mayor. -->
+    <!-- Visualization & Content Choices: 
+        - [Bienvenida y Último Pedido] -> Goal: Informar/Reasegurar -> Presentation: Tarjeta destacada con icono grande y texto en negrita. -> Interaction: Botón principal para ver detalles. -> Justification: Responde a la necesidad más inmediata del usuario. -> Library/Method: HTML/CSS.
+        - [Pedidos Recientes] -> Goal: Organizar/Informar -> Presentation: Lista clara con estados codificados por color. -> Interaction: Botones de "Ver detalle" por pedido. -> Justification: Formato de lista fácil de escanear. -> Library/Method: HTML/CSS (JS para renderizar dinámicamente).
+        - [Gastos Mensuales] -> Goal: Comparar/Informar -> Presentation: Gráfico de barras simple. -> Interaction: Tooltip al pasar el ratón. -> Justification: Ofrece una perspectiva visual y moderna de la actividad sin abrumar. -> Library/Method: Chart.js (Canvas).
+        - [Acciones Rápidas] -> Goal: Navegar -> Presentation: Botones grandes con icono y texto. -> Interaction: Clic para cambiar la vista principal. -> Justification: Navegación inequívoca y accesible. -> Library/Method: HTML/CSS + JS para el cambio de vistas.
+        - [Detalles de Cuenta] -> Goal: Informar/Gestionar -> Presentation: Vista de formulario simple (clave-valor). -> Interaction: Botones de "Editar". -> Justification: Separa la gestión de la visualización para no saturar el dashboard. -> Library/Method: HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght @400;700&display=swap');
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            max-height: 40vh;
+            width: 100%;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .status-entregado { background-color: #d1fae5; color: #065f46; }
+        .status-en-camino { background-color: #fef3c7; color: #92400e; }
+        .status-preparacion { background-color: #dbeafe; color: #1e40af; }
+        .status-cancelado { background-color: #fee2e2; color: #991b1b; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div id="app">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="text-2xl font-bold text-blue-600">
+                        MiEmpresa
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
+                        <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
+                            <span class="text-xl">&#128682;</span>
+                            <span>Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div id="dashboard-view">
+                 <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+                    <!-- Left/Main Column -->
+                    <div class="lg:col-span-2 space-y-8">
+                        <!-- Welcome & Last Order Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                            <h1 class="text-3xl font-bold mb-2">Bienvenida, <span id="userNameMain" th:text="${cliente.nombre}"></span></h1>
+                            <p class="text-gray-600 mb-6">Este es el resumen de tu actividad. Aquí puedes ver tus pedidos y gestionar tu cuenta de forma sencilla.</p>
+                            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
+                                <div class="flex items-center">
+                                    <div class="text-4xl mr-4">&#128230;</div>
+                                    <div>
+                                        <p class="font-bold text-lg">Tu último pedido está <span class="text-blue-700">en camino</span></p>
+                                        <p class="text-gray-700">Llegará aproximadamente el <span class="font-semibold">viernes, 18 de julio de 2025</span>.</p>
+                                        <a href="#" class="inline-block mt-3 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                                            Ver detalles del último pedido
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Recent Orders Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-2xl font-bold mb-4">Tus 3 pedidos más recientes</h2>
+                            <div id="recent-orders-list" class="space-y-4">
+                                <div th:each="pedido : ${pedidos}" class="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                                    <div>
+                                        <p class="font-bold" th:text="'Pedido #' + ${pedido.id}"></p>
+                                        <p class="text-sm text-gray-600" th:text="'Realizado el ' + ${#temporals.format(pedido.fecha, 'dd de MMMM de yyyy')} + ' - Total: $' + ${#numbers.formatDecimal(pedido.total, 0, 'COMMA', 2, 'POINT')}"></p>
+                                    </div>
+                                    <div class="flex items-center space-x-4 w-full sm:w-auto">
+                                        <span class="text-sm font-bold px-3 py-1 rounded-full" th:classappend="'status-' + ${pedido.estado.toLowerCase()}" th:text="${pedido.estado}"></span>
+                                        <a th:href="@{/pedidos/editar/{id}(id=${pedido.id})}" class="text-sm text-blue-600 hover:underline font-semibold">Ver detalle</a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-6">
+                                <a href="#" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                                    Ver historial completo de pedidos
+                                </a>
+                            </div>
+                        </section>
+
+                        <!-- Monthly Spending Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                             <h2 class="text-2xl font-bold mb-4">Resumen de gastos mensuales</h2>
+                             <p class="text-gray-600 mb-4">Este es un resumen de tus compras en los últimos meses.</p>
+                             <div class="chart-container">
+                                <canvas id="spendingChart"></canvas>
+                             </div>
+                        </section>
+                    </div>
+
+                    <!-- Right/Sidebar Column -->
+                    <aside class="lg:col-span-1 space-y-8 mt-8 lg:mt-0">
+                        <!-- Quick Actions Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-2xl font-bold mb-4">Acciones Rápidas</h2>
+                            <nav id="quick-actions-nav" class="space-y-3">
+                                <button data-view="account-details-view" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128100;</span>
+                                    <span class="font-bold text-lg">Mis Datos Personales</span>
+                                </button>
+                                <button class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128666;</span>
+                                    <span class="font-bold text-lg">Mis Direcciones</span>
+                                </button>
+                                <button class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128179;</span>
+                                    <span class="font-bold text-lg">Métodos de Pago</span>
+                                </button>
+                                <a href="/pedidos/nuevo" class="w-full flex items-center p-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                    <span class="text-3xl mr-4">&#128722;</span>
+                                    <span class="font-bold text-lg">Realizar Nuevo Pedido</span>
+                                </a>
+                            </nav>
+                        </section>
+
+                         <!-- Help & Support Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                             <h2 class="text-2xl font-bold mb-4">¿Necesitas Ayuda?</h2>
+                             <div class="space-y-4">
+                                <p class="text-gray-600">Estamos para servirte. Contáctanos si tienes alguna duda.</p>
+                                <div>
+                                    <p class="font-semibold">Llámanos al:</p>
+                                    <a href="tel:+541155551234" class="text-blue-600 font-bold text-lg hover:underline">(011) 5555-1234</a>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Escríbenos un correo:</p>
+                                    <a href="mailto:soporte @miempresa.com" class="text-blue-600 font-bold text-lg hover:underline">soporte @miempresa.com</a>
+                                </div>
+                                 <a href="#" class="inline-block w-full text-center mt-3 bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                                    Ir a Preguntas Frecuentes
+                                </a>
+                             </div>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- Account Details View (hidden by default) -->
+            <div id="account-details-view" class="hidden">
+                 <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h1 class="text-3xl font-bold">Mis Datos Personales</h1>
+                        <button id="back-to-dashboard" class="text-blue-600 hover:underline font-semibold">
+                            &larr; Volver al Resumen
+                        </button>
+                    </div>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="text-sm font-bold text-gray-600">Nombre Completo</label>
+                            <div class="flex items-center justify-between mt-1">
+                                <p id="accountName" class="text-lg" th:text="${cliente.nombre}"></p>
+                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
+                            </div>
+                        </div>
+                        <hr>
+                         <div>
+                            <label class="text-sm font-bold text-gray-600">Dirección</label>
+                            <div class="flex items-center justify-between mt-1">
+                                <p id="accountAddress" class="text-lg" th:text="${cliente.direccion}"></p>
+                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div>
+                            <label class="text-sm font-bold text-gray-600">Teléfono</label>
+                            <div class="flex items-center justify-between mt-1">
+                                <p id="accountPhone" class="text-lg" th:text="${cliente.telefono}"></p>
+                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div>
+                            <label class="text-sm font-bold text-gray-600">CUIT</label>
+                            <div class="flex items-center justify-between mt-1">
+                                <p id="accountCuit" class="text-lg" th:text="${cliente.cuit}"></p>
+                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
+                            </div>
+                        </div>
+                        <hr>
+                        <div>
+                           <label class="text-sm font-bold text-gray-600">Miembro desde</label>
+                           <p id="accountMemberSince" class="text-lg mt-1">Fecha de registro no disponible</p>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = {
+                name: [[${cliente.nombre}]],
+                email: 'elena.r @email.com', // No tenemos email en Cliente, mantener fijo o eliminar
+                memberSince: '12 de marzo de 2022' // No tenemos fecha de registro en Cliente, mantener fijo o eliminar
+            };
+
+            const ordersData = [[${pedidos}]]; // Obtener pedidos del modelo
+
+            // Adaptar ordersData para el formato del template
+            const formattedOrdersData = ordersData.map(pedido => ({
+                id: pedido.id,
+                date: new Date(pedido.fecha).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' }),
+                total: pedido.total.toFixed(2).replace('.', ','), // Formato ARS
+                status: pedido.estado.toLowerCase(),
+                statusText: pedido.estado
+            }));
+
+            // Datos de ejemplo para el gráfico (necesitaríamos lógica de backend para esto)
+            const spendingData = {
+                labels: ['Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
+                values: [1500, 2100, 1800, 3210, 1800, 2450] // Valores de ejemplo
+            };
+
+            // Populate User Data
+            document.getElementById('userNameHeader').textContent = userData.name.split(' ')[0];
+            document.getElementById('userNameMain').textContent = userData.name.split(' ')[0];
+            document.getElementById('accountName').textContent = userData.name;
+            // document.getElementById('accountEmail').textContent = userData.email; // Descomentar si agregamos email al Cliente
+            // document.getElementById('accountMemberSince').textContent = userData.memberSince; // Descomentar si agregamos fecha de registro
+
+
+            // Populate Recent Orders
+            const ordersList = document.getElementById('recent-orders-list');
+            ordersList.innerHTML = ''; // Limpiar contenido estático
+            formattedOrdersData.slice(0, 3).forEach(order => { // Mostrar solo los 3 más recientes
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0';
+                orderDiv.innerHTML = `
+                    <div>
+                        <p class="font-bold">Pedido #${order.id}</p>
+                        <p class="text-sm text-gray-600">Realizado el ${order.date} - Total: $${order.total}</p>
+                    </div>
+                    <div class="flex items-center space-x-4 w-full sm:w-auto">
+                        <span class="text-sm font-bold px-3 py-1 rounded-full status-${order.status}">${order.statusText}</span>
+                        <a href="/pedidos/editar/${order.id}" class="text-sm text-blue-600 hover:underline font-semibold">Ver detalle</a>
+                    </div>
+                `;
+                ordersList.appendChild(orderDiv);
+            });
+
+            // Spending Chart
+            const ctx = document.getElementById('spendingChart').getContext('2d');
+            const spendingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: spendingData.labels,
+                    datasets: [{
+                        label: 'Gastos por Mes ($)',
+                        data: spendingData.values,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // View Switching Logic
+            const dashboardView = document.getElementById('dashboard-view');
+            const accountDetailsView = document.getElementById('account-details-view');
+            const navButtons = document.getElementById('quick-actions-nav').querySelectorAll('button');
+            const backButton = document.getElementById('back-to-dashboard');
+
+            function showView(viewId) {
+                dashboardView.classList.add('hidden');
+                accountDetailsView.classList.add('hidden');
+                
+                document.getElementById(viewId).classList.remove('hidden');
+            }
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const viewId = button.getAttribute('data-view');
+                    if (viewId) {
+                        showView(viewId);
+                    } else {
+                        // For buttons without a data-view, you might want to link somewhere else
+                        alert(`Navegando a la sección "${button.textContent.trim()}"...`);
+                    }
+                });
+            });
+
+            backButton.addEventListener('click', () => {
+                showView('dashboard-view');
+            });
+        });
+    </script>
+</body>
+</html>
