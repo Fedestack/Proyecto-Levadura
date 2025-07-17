@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import java.util.Comparator;
 
 @Controller
 @RequestMapping("/cliente/panel")
@@ -35,6 +36,12 @@ public class ClientePanelController {
         // Obtener pedidos del cliente
         List<Pedido> pedidos = pedidoService.getPedidosByClienteId(CLIENTE_ID_FIJO);
         model.addAttribute("pedidos", pedidos);
+
+        // Obtener el último pedido (el más reciente)
+        Pedido ultimoPedido = pedidos.stream()
+                .max(Comparator.comparing(Pedido::getFecha))
+                .orElse(null);
+        model.addAttribute("ultimoPedido", ultimoPedido);
 
         return "cliente/panel"; // Nombre de la plantilla Thymeleaf
     }

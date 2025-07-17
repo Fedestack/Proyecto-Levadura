@@ -71,11 +71,13 @@
                                 <div class="flex items-center">
                                     <div class="text-4xl mr-4">&#128230;</div>
                                     <div>
-                                        <p class="font-bold text-lg">Tu último pedido está <span class="text-blue-700">en camino</span></p>
-                                        <p class="text-gray-700">Llegará aproximadamente el <span class="font-semibold">viernes, 18 de julio de 2025</span>.</p>
-                                        <a href="#" class="inline-block mt-3 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
+                                        <p class="font-bold text-lg">Tu último pedido está <span
+                                                class="text-blue-700" th:text="${ultimoPedido != null ? ultimoPedido.estado : 'N/A'}">siendo preparado</span></p>
+                                        <p class="text-gray-700">Llegará aproximadamente el <span class="font-semibold" th:text="${ultimoPedido != null ? #temporals.format(ultimoPedido.fecha.plusDays(2), 'EEEE, dd de MMMM de yyyy') : 'N/A'}">viernes, 18 de julio de 2025</span>.</p>
+                                        <a th:if="${ultimoPedido != null}" th:href="@{/pedidos/ver/{id}(id=${ultimoPedido.id})}" class="inline-block mt-3 bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">
                                             Ver detalles del último pedido
                                         </a>
+                                        <span th:unless="${ultimoPedido != null}" class="inline-block mt-3 text-gray-500">No hay pedidos recientes.</span>
                                     </div>
                                 </div>
                             </div>
@@ -97,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="text-center mt-6">
-                                <a href="#" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                                <a th:href="@{/pedidos}" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
                                     Ver historial completo de pedidos
                                 </a>
                             </div>

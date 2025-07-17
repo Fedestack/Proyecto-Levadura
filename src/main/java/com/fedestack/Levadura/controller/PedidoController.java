@@ -64,6 +64,16 @@ public class PedidoController {
         return "pedidos/formulario";
     }
 
+    @GetMapping("/ver/{id}")
+    public String verDetallePedido(HttpServletRequest request, Model model) {
+        Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+        Long id = Long.valueOf(pathVariables.get("id"));
+        Pedido pedido = pedidoService.getPedidoById(id)
+                .orElseThrow(() -> new IllegalArgumentException("ID de Pedido no válido:" + id));
+        model.addAttribute("pedido", pedido);
+        return "pedidos/ver_detalle";
+    }
+
     @PostMapping("/guardar")
     @ResponseBody // Indica que el método devuelve directamente el cuerpo de la respuesta (no una vista)
     public String guardarPedido(@RequestBody PedidoRequestDTO pedidoRequestDTO) {
