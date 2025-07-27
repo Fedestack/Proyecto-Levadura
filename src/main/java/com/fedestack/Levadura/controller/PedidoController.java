@@ -1,5 +1,8 @@
 package com.fedestack.Levadura.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fedestack.Levadura.dto.DetallePedidoDTO;
 import com.fedestack.Levadura.dto.PedidoRequestDTO;
 import com.fedestack.Levadura.model.Cliente;
 import com.fedestack.Levadura.model.DetallePedido;
@@ -11,17 +14,17 @@ import com.fedestack.Levadura.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/pedidos")
@@ -36,6 +39,9 @@ public class PedidoController {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private ObjectMapper objectMapper; // Jackson's ObjectMapper
+
     @GetMapping("")
     public String listarPedidos(Model model) {
         List<Pedido> pedidos = pedidoService.getAllPedidos();
@@ -43,12 +49,35 @@ public class PedidoController {
         return "pedidos/lista";
     }
 
-    @GetMapping("/nuevo")
-    public String mostrarFormularioDeNuevoPedido(Model model) {
-        // Ya no pasamos la lista de clientes al frontend, se asume que el cliente está logueado o se asigna en backend
+    @RequestMapping("/nuevo")
+    public String mostrarFormularioDeNuevoPedido(@RequestParam(name = "observaciones", required = false) String observaciones,
+                                                 @RequestParam(name = "detallesJson", required = false) String detallesJson,
+                                                 Model model) throws IOException {
         List<Producto> productos = pedidoService.getAllProductos();
-        model.addAttribute("pedido", new Pedido());
         model.addAttribute("productos", productos);
+
+        Pedido pedido = new Pedido();
+        if (observaciones != null && detallesJson != null) {
+            // Si vienen datos, es una edición de un pedido nuevo desde la pantalla de confirmación
+            pedido.setObservaciones(observaciones);
+            List<DetallePedidoDTO> detalleDTOs = objectMapper.readValue(detallesJson, new TypeReference<List<DetallePedidoDTO>>(){});
+            List<DetallePedido> detalles = new ArrayList<>();
+            for (DetallePedidoDTO dto : detalleDTOs) {
+                Producto producto = productoRepository.findById(Long.valueOf(dto.getProductoId()))
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + dto.getProductoId()));
+                DetallePedido detalle = new DetallePedido();
+                detalle.setProducto(producto);
+                detalle.setCantidad(dto.getCantidad());
+                detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual
+                detalles.add(detalle);
+            }
+            pedido.setDetalles(detalles);
+            // Forzar la inicialización de los IDs de producto para Thymeleaf/JavaScript
+            for (DetallePedido detalle : detalles) {
+                detalle.getProducto().getId(); // Acceder al ID fuerza la inicialización del proxy
+            }
+        }
+        model.addAttribute("pedido", pedido);
         return "pedidos/formulario";
     }
 
@@ -73,6 +102,106 @@ public class PedidoController {
         model.addAttribute("pedido", pedido);
         return "pedidos/ver_detalle";
     }
+
+    @PostMapping("/revisar")
+    public String revisarPedido(@RequestParam(required = false) Long pedidoId,
+                                @RequestParam(required = false) Long clienteId,
+                                @RequestParam String observaciones,
+                                @RequestParam String detallesJson,
+                                RedirectAttributes redirectAttributes) throws IOException {
+
+        // Construir el objeto Pedido (sin persistir) para la vista de confirmación
+        Pedido pedidoDeConfirmacion = new Pedido();
+        pedidoDeConfirmacion.setId(pedidoId);
+        pedidoDeConfirmacion.setObservaciones(observaciones);
+
+        // Asignar cliente (usando el primero si no se provee, como en el método de guardar)
+        final Long finalClienteId;
+        if (clienteId == null) {
+            finalClienteId = clienteRepository.findAll().stream().findFirst()
+                    .map(Cliente::getId)
+                    .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos."));
+        } else {
+            finalClienteId = clienteId;
+        }
+        Cliente cliente = clienteRepository.findById(finalClienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + finalClienteId));
+        pedidoDeConfirmacion.setCliente(cliente);
+
+        // Deserializar los detalles del JSON
+        List<DetallePedidoDTO> detalleDTOs = objectMapper.readValue(detallesJson, new TypeReference<List<DetallePedidoDTO>>(){});
+        List<DetallePedido> detalles = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (DetallePedidoDTO dto : detalleDTOs) {
+            Producto producto = productoRepository.findById(Long.valueOf(dto.getProductoId()))
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + dto.getProductoId()));
+            DetallePedido detalle = new DetallePedido();
+            detalle.setProducto(producto);
+            detalle.setCantidad(dto.getCantidad());
+            detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual para la previsualización
+            detalles.add(detalle);
+            BigDecimal cantidad = new BigDecimal(dto.getCantidad());
+            total = total.add(producto.getPrecioUnitario().multiply(cantidad));
+        }
+
+        pedidoDeConfirmacion.setDetalles(detalles);
+        pedidoDeConfirmacion.setTotal(total);
+
+        // Pasamos los datos del pedido a través de flash attributes para la redirección GET
+        redirectAttributes.addFlashAttribute("pedido", pedidoDeConfirmacion);
+        redirectAttributes.addFlashAttribute("pedidoId", pedidoId);
+        redirectAttributes.addFlashAttribute("clienteId", finalClienteId);
+        redirectAttributes.addFlashAttribute("observaciones", observaciones);
+        redirectAttributes.addFlashAttribute("detallesJson", detallesJson);
+
+        return "redirect:/pedidos/revisar";
+    }
+
+    @GetMapping("/revisar")
+    public String revisarPedidoGet(@ModelAttribute("pedidoId") Long pedidoId,
+                                   @ModelAttribute("clienteId") Long clienteId,
+                                   @ModelAttribute("observaciones") String observaciones,
+                                   @ModelAttribute("detallesJson") String detallesJson,
+                                   Model model) throws IOException {
+
+        Pedido pedidoDeConfirmacion = new Pedido();
+        pedidoDeConfirmacion.setId(pedidoId);
+        pedidoDeConfirmacion.setObservaciones(observaciones);
+
+        // Asignar cliente
+        Cliente cliente = clienteRepository.findById(clienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + clienteId));
+        pedidoDeConfirmacion.setCliente(cliente);
+
+        // Deserializar los detalles del JSON
+        List<DetallePedidoDTO> detalleDTOs = objectMapper.readValue(detallesJson, new TypeReference<List<DetallePedidoDTO>>(){});
+        List<DetallePedido> detalles = new ArrayList<>();
+        BigDecimal total = BigDecimal.ZERO;
+
+        for (DetallePedidoDTO dto : detalleDTOs) {
+            Producto producto = productoRepository.findById(Long.valueOf(dto.getProductoId()))
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + dto.getProductoId()));
+            DetallePedido detalle = new DetallePedido();
+            detalle.setProducto(producto);
+            detalle.setCantidad(dto.getCantidad());
+            detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual para la previsualización
+            detalles.add(detalle);
+            BigDecimal cantidad = new BigDecimal(dto.getCantidad());
+            total = total.add(producto.getPrecioUnitario().multiply(cantidad));
+        }
+
+        pedidoDeConfirmacion.setDetalles(detalles);
+        pedidoDeConfirmacion.setTotal(total);
+
+        model.addAttribute("pedido", pedidoDeConfirmacion);
+        model.addAttribute("pedidoId", pedidoId);
+        model.addAttribute("clienteId", clienteId);
+        model.addAttribute("observaciones", observaciones);
+        model.addAttribute("detallesJson", detallesJson);
+        return "pedidos/confirmacion_pedido";
+    }
+
 
     @PostMapping("/guardar")
     @ResponseBody // Indica que el método devuelve directamente el cuerpo de la respuesta (no una vista)

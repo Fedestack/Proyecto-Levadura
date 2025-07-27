@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Confirmar Pedido</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1>Revisión del Pedido</h1>
+    <p>Por favor, revise los detalles de su pedido antes de confirmarlo.</p>
+
+    <div class="card">
+        <div class="card-header">
+            <h4>Detalles del Cliente</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Nombre:</strong> <span th:text="${pedido.cliente.nombre}"></span></p>
+            <p><strong>Dirección:</strong> <span th:text="${pedido.cliente.direccion}"></span></p>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>Resumen del Pedido</h4>
+        </div>
+        <div class="card-body">
+            <p><strong>Observaciones:</strong> <span th:text="${pedido.observaciones}"></span></p>
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th>Precio Unitario</th>
+                    <th>Subtotal</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="detalle : ${pedido.detalles}">
+                    <td th:text="${detalle.producto.nombre}"></td>
+                    <td th:text="${detalle.cantidad + ' ' + detalle.producto.unidad}"></td>
+                    <td th:text="${#numbers.formatDecimal(detalle.precioCongelado, 1, 2)}"></td>
+                    <td th:text="${#numbers.formatDecimal(detalle.cantidad * detalle.precioCongelado, 1, 2)}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="text-end mt-3">
+                <strong>Total del Pedido: <span th:text="${#numbers.formatDecimal(pedido.total, 1, 2)}"></span></strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formularios y botones de acción -->
+    <div class="mt-4">
+
+        <!-- Botón para Confirmar Pedido (envía a guardar) -->
+        <button id="confirmarBtn" class="btn btn-success">Confirmar Pedido</button>
+
+        <!-- Botón para Editar Pedido (reenvía al formulario de edición) -->
+        <div th:if="${pedidoId != null}" style="display: inline;">
+            <form id="editFormExisting" th:action="@{/pedidos/editar/{id}(id=${pedidoId})}" method="get" style="display: inline;">
+                <button type="submit" class="btn btn-warning">Editar Pedido</button>
+            </form>
+        </div>
+        <div th:unless="${pedidoId != null}" style="display: inline;">
+            <form id="editFormNew" th:action="@{/pedidos/nuevo}" method="post" style="display: inline;">
+                <input type="hidden" name="observaciones" th:value="${observaciones}" />
+                <input type="hidden" name="detallesJson" th:value="${detallesJson}" />
+                <button type="submit" class="btn btn-warning">Editar Pedido</button>
+            </form>
+        </div>
+
+        <!-- Botón para Volver (al panel del cliente o historial) -->
+        <a th:href="@{/cliente/panel}" class="btn btn-secondary">Volver al Panel</a>
+
+        <!-- Botón para Guardar como Pedido Automático -->
+        <button id="guardarAutomaticoBtn" class="btn btn-info">Guardar como Pedido Automático</button>
+    </div>
+
+</div>
+
+<!-- Script para manejar la confirmación del pedido -->
+<script th:inline="javascript">
+    document.getElementById('confirmarBtn').addEventListener('click', function() {
+        // Datos del pedido que se enviarán a la API
+        const pedidoData = {
+            id: [[${pedidoId}]],
+            clienteId: [[${clienteId}]],
+            observaciones: [[${observaciones}]],
+            detalles: JSON.parse([[${detallesJson}]]) // El JSON ya tiene el formato correcto
+        };
+
+        // Usamos fetch para enviar los datos al endpoint de guardado
+        fetch('/pedidos/guardar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pedidoData)
+        })
+        .then(response => {
+            if (response.ok) {
+                // Si se guarda correctamente, redirigimos al panel del cliente
+                alert('¡Pedido confirmado y guardado con éxito!');
+                window.location.href = '/'; // Redirigir a la raíz, que lleva al panel
+            } else {
+                response.text().then(text => alert('Error al guardar el pedido: ' + text));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al enviar el pedido.');
+        });
+    });
+
+    document.getElementById('guardarAutomaticoBtn').addEventListener('click', function() {
+        const nombreAutomatico = prompt("Ingrese un nombre para este Pedido Automático:");
+        if (!nombreAutomatico) {
+            alert("Debe ingresar un nombre para guardar el Pedido Automático.");
+            return;
+        }
+
+        const pedidoAutomaticoData = {
+            nombre: nombreAutomatico,
+            clienteId: [[${clienteId}]],
+            observaciones: [[${observaciones}]],
+            detalles: JSON.parse([[${detallesJson}]])
+        };
+
+        fetch('/pedidos-automaticos/guardar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(pedidoAutomaticoData)
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('¡Pedido Automático guardado con éxito!');
+                window.location.href = '/cliente/panel'; // Redirigir al panel del cliente
+            } else {
+                response.text().then(text => alert('Error al guardar el Pedido Automático: ' + text));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Ocurrió un error al guardar el Pedido Automático.');
+        });
+    });
+</script>
+
+</body>
+</html>

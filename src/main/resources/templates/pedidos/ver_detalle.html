@@ -76,7 +76,7 @@
             <!-- Botones de Acción -->
             <div class="flex justify-end items-center space-x-4 pt-4">
                 <a th:href="@{/pedidos/editar/{id}(id=${pedido.id})}" class="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition-colors">Editar Pedido</a>
-                <a href="javascript:history.back()" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">Volver</a>
+                <a th:href="@{/cliente/panel}" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">Volver al Panel</a>
             </div>
         </div>
     </body>
