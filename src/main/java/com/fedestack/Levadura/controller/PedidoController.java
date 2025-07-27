@@ -104,10 +104,10 @@ public class PedidoController {
     }
 
     @PostMapping("/revisar")
-    public String revisarPedido(@RequestParam(required = false) Long pedidoId,
-                                @RequestParam(required = false) Long clienteId,
-                                @RequestParam String observaciones,
-                                @RequestParam String detallesJson,
+    public String revisarPedido(@RequestParam(value = "pedidoId", required = false) Long pedidoId,
+                                @RequestParam("clienteId") Long clienteId,
+                                @RequestParam("observaciones") String observaciones,
+                                @RequestParam("detallesJson") String detallesJson,
                                 RedirectAttributes redirectAttributes) throws IOException {
 
         // Construir el objeto Pedido (sin persistir) para la vista de confirmación
@@ -159,10 +159,10 @@ public class PedidoController {
     }
 
     @GetMapping("/revisar")
-    public String revisarPedidoGet(@ModelAttribute("pedidoId") Long pedidoId,
-                                   @ModelAttribute("clienteId") Long clienteId,
-                                   @ModelAttribute("observaciones") String observaciones,
-                                   @ModelAttribute("detallesJson") String detallesJson,
+    public String revisarPedidoGet(@RequestParam(value = "pedidoId", required = false) Long pedidoId,
+                                   @RequestParam("clienteId") Long clienteId,
+                                   @RequestParam("observaciones") String observaciones,
+                                   @RequestParam("detallesJson") String detallesJson,
                                    Model model) throws IOException {
 
         Pedido pedidoDeConfirmacion = new Pedido();

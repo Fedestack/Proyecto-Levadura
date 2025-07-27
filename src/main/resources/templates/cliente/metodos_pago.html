@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Métodos de Pago</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+    <div id="app">
+        <!-- Header -->
+        <header class="bg-white shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center py-4">
+                    <div class="text-2xl font-bold text-blue-600">
+                        MiEmpresa
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
+                        <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
+                            <span class="text-xl">&#128682;</span>
+                            <span>Cerrar Sesión</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-3xl font-bold">Métodos de Pago</h1>
+                </div>
+
+                <div class="space-y-6">
+                    <p class="text-gray-600">Aquí puedes gestionar tus métodos de pago.</p>
+
+                    <!-- Formulario para añadir nuevo método de pago -->
+                    <section class="border-t pt-6 mt-6">
+                        <h2 class="text-2xl font-bold mb-4">Añadir Nuevo Método de Pago</h2>
+                        <form th:action="@{/cliente/metodos-pago/guardar}" th:object="${nuevoMetodoPago}" method="POST" class="space-y-4">
+                            <div>
+                                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Método de Pago</label>
+                                <input type="text" id="nombre" name="nombre" th:field="*{nombre}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" placeholder="Ej: Efectivo, Débito, Transferencia" required>
+                            </div>
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                Guardar Método de Pago
+                            </button>
+                        </form>
+                    </section>
+
+                    <!-- Lista de métodos de pago existentes -->
+                    <section class="border-t pt-6 mt-6">
+                        <h2 class="text-2xl font-bold mb-4">Tus Métodos de Pago Guardados</h2>
+                        <div id="metodos-pago-list" class="space-y-4">
+                            <div th:if="${metodosPago.isEmpty()}">
+                                <p class="text-gray-500">No tienes métodos de pago guardados aún.</p>
+                            </div>
+                            <div th:each="metodo : ${metodosPago}" class="border rounded-md p-4 flex justify-between items-center">
+                                <div>
+                                    <p class="font-bold text-lg" th:text="${metodo.nombre}"></p>
+                                </div>
+                                <form th:action="@{/cliente/metodos-pago/eliminar/{id}(id=${metodo.id})}" method="post">
+                                    <button type="submit" class="text-red-600 hover:text-red-800">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </section>
+                    <a href="/cliente/panel" class="inline-block w-full text-center mt-6 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                        &larr; Volver al Panel
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            // Placeholder for user name in header
+            const userNameHeader = document.getElementById('userNameHeader');
+            if (userNameHeader) {
+                userNameHeader.textContent = [[${cliente.nombre}]] ? [[${cliente.nombre}]].split(' ')[0] : 'Usuario';
+            }
+        });
+    </script>
+</body>
+</html>

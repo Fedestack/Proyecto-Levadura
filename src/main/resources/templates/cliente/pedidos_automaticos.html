@@ -10,6 +10,13 @@
 <div class="container mt-4">
     <h1>Mis Pedidos Automáticos</h1>
 
+    <div th:if="${successMessage}" class="alert alert-success" role="alert">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
     <p th:if="${pedidosAutomaticos.isEmpty()}">
         No tienes pedidos automáticos guardados.
     </p>
@@ -53,24 +60,19 @@
                 const pedidoAutomaticoId = this.dataset.pedidoAutomaticoId;
                 console.log("ID del Pedido Automático:", pedidoAutomaticoId);
 
-                fetch('/cliente/pedidos-automaticos/crear-pedido', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `pedidoAutomaticoId=${pedidoAutomaticoId}`
+                fetch(`/cliente/pedidos-automaticos/crear-pedido?pedidoAutomaticoId=${pedidoAutomaticoId}`, {
+                    method: 'POST'
                 })
                 .then(response => {
                     if (response.ok) {
                         // Redirigir a la pantalla de revisión (el backend ya maneja el addFlashAttribute)
                         window.location.href = '/pedidos/revisar';
                     } else {
-                        response.text().then(text => alert('Error al crear el pedido: ' + text));
+                        response.text().then(text => console.error('Error al crear el pedido: ' + text));
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    alert('Ocurrió un error al enviar la solicitud.');
+                    console.error('Ocurrió un error al enviar la solicitud:', error);
                 });
             });
         });

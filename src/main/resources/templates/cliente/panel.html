@@ -17,7 +17,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Lato:wght @400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
         body {
             font-family: 'Lato', sans-serif;
         }
@@ -121,21 +121,22 @@
                         <section class="bg-white p-6 rounded-xl shadow-md">
                             <h2 class="text-2xl font-bold mb-4">Acciones Rápidas</h2>
                             <nav id="quick-actions-nav" class="space-y-3">
-                                <button data-view="account-details-view" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <span class="text-3xl mr-4">&#128100;</span>
-                                    <span class="font-bold text-lg">Mis Datos Personales</span>
-                                </button>
-                                <button class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <span class="text-3xl mr-4">&#128666;</span>
-                                    <span class="font-bold text-lg">Mis Direcciones</span>
-                                </button>
-                                <button class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
-                                    <span class="text-3xl mr-4">&#128179;</span>
-                                    <span class="font-bold text-lg">Métodos de Pago</span>
-                                </button>
                                 <a th:href="@{/pedidos/nuevo}" class="w-full flex items-center p-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
                                     <span class="text-3xl mr-4">&#128722;</span>
                                     <span class="font-bold text-lg">Realizar Nuevo Pedido</span>
+                                </a>
+                                <a th:href="@{/cliente/pedidos-automaticos}" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128467;</span> <!-- Icono de calendario o similar -->
+                                    <span class="font-bold text-lg">Pedidos Automáticos</span>
+                                </a>
+                                <a href="#account-details-view" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128100;</span>
+                                    <span class="font-bold text-lg">Mis Datos Personales</span>
+                                </a>
+                                
+                                <a th:href="@{/cliente/metodos-pago}" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128179;</span>
+                                    <span class="font-bold text-lg">Métodos de Pago</span>
                                 </a>
                             </nav>
                         </section>
@@ -165,50 +166,43 @@
             <!-- Account Details View (hidden by default) -->
             <div id="account-details-view" class="hidden">
                  <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
-                    <div class="flex justify-between items-center mb-6">
-                        <h1 class="text-3xl font-bold">Mis Datos Personales</h1>
-                        <button id="back-to-dashboard" class="text-blue-600 hover:underline font-semibold">
-                            &larr; Volver al Resumen
-                        </button>
-                    </div>
-                    <div class="space-y-6">
+                    <form th:action="@{/cliente/panel/actualizar-datos}" method="post" class="space-y-6">
                         <div>
-                            <label class="text-sm font-bold text-gray-600">Nombre Completo</label>
-                            <div class="flex items-center justify-between mt-1">
-                                <p id="accountName" class="text-lg" th:text="${cliente.nombre}"></p>
-                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
-                            </div>
+                            <label for="nombre" class="block text-sm font-bold text-gray-600">Nombre Completo</label>
+                            <input type="text" id="nombre" name="nombre" th:value="${cliente.nombre}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                          <div>
-                            <label class="text-sm font-bold text-gray-600">Dirección</label>
-                            <div class="flex items-center justify-between mt-1">
-                                <p id="accountAddress" class="text-lg" th:text="${cliente.direccion}"></p>
-                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
-                            </div>
+                            <label for="direccion" class="block text-sm font-bold text-gray-600">Dirección Principal</label>
+                            <input type="text" id="direccion" name="direccion" th:value="${cliente.direccion}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                         <div>
+                            <label for="direccion2" class="block text-sm font-bold text-gray-600">Dirección Secundaria</label>
+                            <input type="text" id="direccion2" name="direccion2" th:value="${cliente.direccion2}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                         <div>
-                            <label class="text-sm font-bold text-gray-600">Teléfono</label>
-                            <div class="flex items-center justify-between mt-1">
-                                <p id="accountPhone" class="text-lg" th:text="${cliente.telefono}"></p>
-                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
-                            </div>
+                            <label for="telefono" class="block text-sm font-bold text-gray-600">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" th:value="${cliente.telefono}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                         <div>
-                            <label class="text-sm font-bold text-gray-600">CUIT</label>
-                            <div class="flex items-center justify-between mt-1">
-                                <p id="accountCuit" class="text-lg" th:text="${cliente.cuit}"></p>
-                                <button class="text-sm text-blue-600 hover:underline">Editar</button>
-                            </div>
+                            <label for="cuit" class="block text-sm font-bold text-gray-600">CUIT</label>
+                            <input type="text" id="cuit" name="cuit" th:value="${cliente.cuit}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                         <div>
                            <label class="text-sm font-bold text-gray-600">Miembro desde</label>
                            <p id="accountMemberSince" class="text-lg mt-1">Fecha de registro no disponible</p>
                         </div>
-                    </div>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Guardar Cambios
+                        </button>
+                    </form>
+                    <button id="back-to-dashboard" class="w-full text-center mt-6 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                        &larr; Volver al Panel
+                    </button>
                  </div>
             </div>
 
@@ -243,7 +237,6 @@
             // Populate User Data
             document.getElementById('userNameHeader').textContent = userData.name.split(' ')[0];
             document.getElementById('userNameMain').textContent = userData.name.split(' ')[0];
-            document.getElementById('accountName').textContent = userData.name;
             // document.getElementById('accountEmail').textContent = userData.email; // Descomentar si agregamos email al Cliente
             // document.getElementById('accountMemberSince').textContent = userData.memberSince; // Descomentar si agregamos fecha de registro
 
@@ -325,30 +318,35 @@
             // View Switching Logic
             const dashboardView = document.getElementById('dashboard-view');
             const accountDetailsView = document.getElementById('account-details-view');
-            const navButtons = document.getElementById('quick-actions-nav').querySelectorAll('button');
-            const backButton = document.getElementById('back-to-dashboard');
+            const backToDashboardButton = document.getElementById('back-to-dashboard');
 
             function showView(viewId) {
                 dashboardView.classList.add('hidden');
                 accountDetailsView.classList.add('hidden');
-                
                 document.getElementById(viewId).classList.remove('hidden');
             }
 
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const viewId = button.getAttribute('data-view');
-                    if (viewId) {
-                        showView(viewId);
-                    } else {
-                        // For buttons without a data-view, you might want to link somewhere else
-                        alert(`Navegando a la sección "${button.textContent.trim()}"...`);
-                    }
-                });
+            // Handle initial view based on URL hash
+            if (window.location.hash === '#account-details-view') {
+                showView('account-details-view');
+            } else {
+                showView('dashboard-view');
+            }
+
+            // Handle back button in account details view
+            backToDashboardButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                window.history.pushState({}, '', window.location.pathname); // Change URL without reloading
+                showView('dashboard-view');
             });
 
-            backButton.addEventListener('click', () => {
-                showView('dashboard-view');
+            // Handle browser's back/forward buttons
+            window.addEventListener('popstate', (event) => {
+                if (window.location.hash === '#account-details-view') {
+                    showView('account-details-view');
+                } else {
+                    showView('dashboard-view');
+                }
             });
         });
     </script>

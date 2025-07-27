@@ -15,7 +15,7 @@
         <input type="hidden" id="pedidoId" name="pedidoId" th:value="${pedido.id}" />
 
         <!-- Campo oculto para el cliente. -->
-        <input type="hidden" id="clienteId" name="clienteId" th:value="${pedido.cliente != null ? pedido.cliente.id : ''}" />
+        <input type="hidden" id="clienteId" name="clienteId" th:value="${pedido.cliente != null ? pedido.cliente.id : 1L}" />
 
         <!-- Campo oculto para los detalles del pedido (en formato JSON) -->
         <input type="hidden" id="detallesJson" name="detallesJson" />

@@ -45,7 +45,7 @@ public class PedidoAutomaticoClienteController {
     }
 
     @PostMapping("/crear-pedido")
-    public String crearPedidoDesdeAutomatico(@RequestParam Long pedidoAutomaticoId,
+    public String crearPedidoDesdeAutomatico(@RequestParam("pedidoAutomaticoId") Long pedidoAutomaticoId,
                                              RedirectAttributes redirectAttributes) {
         try {
             // Aquí deberías obtener el clienteId de la sesión del usuario logueado
@@ -54,11 +54,15 @@ public class PedidoAutomaticoClienteController {
 
             Pedido nuevoPedido = pedidoAutomaticoService.crearPedidoDesdeAutomatico(pedidoAutomaticoId, clienteId);
 
+            // Asegurarse de que clienteId no sea nulo antes de añadirlo a los atributos de redirección
+            Long finalClienteId = nuevoPedido.getCliente() != null ? nuevoPedido.getCliente().getId() : clienteId; // Usar el clienteId del pedido o el fijo
+            System.out.println("Cliente ID antes de redirección: " + finalClienteId);
+
             // Redirigir a la pantalla de revisión con los datos del nuevo pedido
-            redirectAttributes.addFlashAttribute("pedido", nuevoPedido);
-            redirectAttributes.addFlashAttribute("pedidoId", nuevoPedido.getId());
-            redirectAttributes.addFlashAttribute("clienteId", nuevoPedido.getCliente().getId());
-            redirectAttributes.addFlashAttribute("observaciones", nuevoPedido.getObservaciones());
+            // Usamos addAttribute para que los parámetros vayan en la URL y sean accesibles por @RequestParam
+            redirectAttributes.addAttribute("pedidoId", nuevoPedido.getId());
+            redirectAttributes.addAttribute("clienteId", finalClienteId);
+            redirectAttributes.addAttribute("observaciones", nuevoPedido.getObservaciones());
 
             // Convertir detalles a JSON para pasarlos al formulario de revisión
             List<DetallePedidoDTO> detallesDTOs = new ArrayList<>();
@@ -68,7 +72,8 @@ public class PedidoAutomaticoClienteController {
                 dto.setCantidad(detalle.getCantidad());
                 detallesDTOs.add(dto);
             }
-            redirectAttributes.addFlashAttribute("detallesJson", objectMapper.writeValueAsString(detallesDTOs));
+            redirectAttributes.addAttribute("detallesJson", objectMapper.writeValueAsString(detallesDTOs));
+            redirectAttributes.addFlashAttribute("successMessage", "Pedido automático creado con éxito.");
 
             return "redirect:/pedidos/revisar";
         } catch (Exception e) {
