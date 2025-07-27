@@ -105,25 +105,37 @@ public class PedidoController {
 
     @PostMapping("/revisar")
     public String revisarPedido(@RequestParam(value = "pedidoId", required = false) Long pedidoId,
-                                @RequestParam("clienteId") Long clienteId,
-                                @RequestParam("observaciones") String observaciones,
-                                @RequestParam("detallesJson") String detallesJson,
+                                @RequestParam(value = "clienteId", required = false) Long clienteId,
+                                @RequestParam(value = "observaciones", required = false) String observaciones,
+                                @RequestParam(value = "detallesJson", required = false) String detallesJson,
                                 RedirectAttributes redirectAttributes) throws IOException {
+
+        // Asignar cliente (usando el primero si no se provee, como en el método de guardar)
+        final Long finalClienteId;
+        if (clienteId == null) {
+            final Long CLIENTE_ID_FIJO = 1L; // Definir aquí o importar si es una constante global
+            finalClienteId = clienteRepository.findAll().stream().findFirst()
+                    .map(Cliente::getId)
+                    .orElse(CLIENTE_ID_FIJO); // Usar el ID fijo si no hay clientes en la base de datos
+        } else {
+            finalClienteId = clienteId;
+        }
+
+        // Manejar observaciones nulas o vacías
+        if (observaciones == null || observaciones.trim().isEmpty()) {
+            observaciones = "Sin observaciones";
+        }
+
+        // Manejar detallesJson nulos o vacíos
+        if (detallesJson == null || detallesJson.trim().isEmpty()) {
+            detallesJson = "[]";
+        }
 
         // Construir el objeto Pedido (sin persistir) para la vista de confirmación
         Pedido pedidoDeConfirmacion = new Pedido();
         pedidoDeConfirmacion.setId(pedidoId);
         pedidoDeConfirmacion.setObservaciones(observaciones);
 
-        // Asignar cliente (usando el primero si no se provee, como en el método de guardar)
-        final Long finalClienteId;
-        if (clienteId == null) {
-            finalClienteId = clienteRepository.findAll().stream().findFirst()
-                    .map(Cliente::getId)
-                    .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos."));
-        } else {
-            finalClienteId = clienteId;
-        }
         Cliente cliente = clienteRepository.findById(finalClienteId)
                 .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + finalClienteId));
         pedidoDeConfirmacion.setCliente(cliente);
@@ -148,34 +160,56 @@ public class PedidoController {
         pedidoDeConfirmacion.setDetalles(detalles);
         pedidoDeConfirmacion.setTotal(total);
 
-        // Pasamos los datos del pedido a través de flash attributes para la redirección GET
-        redirectAttributes.addFlashAttribute("pedido", pedidoDeConfirmacion);
-        redirectAttributes.addFlashAttribute("pedidoId", pedidoId);
-        redirectAttributes.addFlashAttribute("clienteId", finalClienteId);
-        redirectAttributes.addFlashAttribute("observaciones", observaciones);
-        redirectAttributes.addFlashAttribute("detallesJson", detallesJson);
+        // Pasamos los datos del pedido a través de atributos de redirección (como parámetros de URL)
+        redirectAttributes.addAttribute("pedidoId", pedidoId);
+        redirectAttributes.addAttribute("clienteId", finalClienteId);
+        redirectAttributes.addAttribute("observaciones", observaciones);
+        redirectAttributes.addAttribute("detallesJson", detallesJson);
 
         return "redirect:/pedidos/revisar";
     }
 
     @GetMapping("/revisar")
     public String revisarPedidoGet(@RequestParam(value = "pedidoId", required = false) Long pedidoId,
-                                   @RequestParam("clienteId") Long clienteId,
-                                   @RequestParam("observaciones") String observaciones,
-                                   @RequestParam("detallesJson") String detallesJson,
+                                   @RequestParam(value = "clienteId", required = false) Long clienteId,
+                                   @RequestParam(value = "observaciones", required = false) String observaciones,
+                                   @RequestParam(value = "detallesJson", required = false) String detallesJson,
                                    Model model) throws IOException {
+
+        // Manejar observaciones nulas o vacías
+        if (observaciones == null || observaciones.trim().isEmpty()) {
+            observaciones = "Sin observaciones";
+        }
+
+        // Manejar detallesJson nulos o vacíos
+        if (detallesJson == null || detallesJson.trim().isEmpty()) {
+            detallesJson = "[]";
+        }
+
+        // Asignar cliente (usando el primero si no se provee, como en el método de guardar)
+        final Long finalClienteId;
+        if (clienteId == null) {
+            final Long CLIENTE_ID_FIJO = 1L; // Definir aquí o importar si es una constante global
+            finalClienteId = clienteRepository.findAll().stream().findFirst()
+                    .map(Cliente::getId)
+                    .orElse(CLIENTE_ID_FIJO); // Usar el ID fijo si no hay clientes en la base de datos
+        } else {
+            finalClienteId = clienteId;
+        }
 
         Pedido pedidoDeConfirmacion = new Pedido();
         pedidoDeConfirmacion.setId(pedidoId);
         pedidoDeConfirmacion.setObservaciones(observaciones);
 
         // Asignar cliente
-        Cliente cliente = clienteRepository.findById(clienteId)
-                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + clienteId));
+        Cliente cliente = clienteRepository.findById(finalClienteId)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + finalClienteId));
         pedidoDeConfirmacion.setCliente(cliente);
 
         // Deserializar los detalles del JSON
+        System.out.println("Detalles JSON recibido en revisarPedidoGet: " + detallesJson);
         List<DetallePedidoDTO> detalleDTOs = objectMapper.readValue(detallesJson, new TypeReference<List<DetallePedidoDTO>>(){});
+        System.out.println("Detalles DTOs después de deserialización: " + detalleDTOs);
         List<DetallePedido> detalles = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 

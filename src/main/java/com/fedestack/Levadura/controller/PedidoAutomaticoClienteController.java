@@ -72,7 +72,9 @@ public class PedidoAutomaticoClienteController {
                 dto.setCantidad(detalle.getCantidad());
                 detallesDTOs.add(dto);
             }
-            redirectAttributes.addAttribute("detallesJson", objectMapper.writeValueAsString(detallesDTOs));
+            String detallesJsonString = objectMapper.writeValueAsString(detallesDTOs);
+            System.out.println("Detalles JSON generado en PedidoAutomaticoClienteController: " + detallesJsonString);
+            redirectAttributes.addAttribute("detallesJson", detallesJsonString);
             redirectAttributes.addFlashAttribute("successMessage", "Pedido automático creado con éxito.");
 
             return "redirect:/pedidos/revisar";
