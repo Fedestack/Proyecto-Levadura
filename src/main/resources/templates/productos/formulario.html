@@ -3,47 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${producto.id == null ? 'Nuevo Producto' : 'Editar Producto'}">Formulario de Producto</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800">
 
-<div class="container mt-4">
-    <h1 th:text="${producto.id == null ? 'Registrar Nuevo Producto' : 'Editar Producto'}"></h1>
-
-    <form th:action="@{/productos/guardar}" th:object="${producto}" method="post">
-
-        <input type="hidden" th:field="*{id}"/>
-
-        <div class="mb-3">
-            <label for="codigo" class="form-label">Código</label>
-            <input type="text" class="form-control" id="codigo" th:field="*{codigo}" required>
+<div id="app">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-2xl font-bold text-blue-600">
+                    MiEmpresa
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
+                    <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
+                        <span class="text-xl">&#128682;</span>
+                        <span>Cerrar Sesión</span>
+                    </button>
+                </div>
+            </div>
         </div>
+    </header>
 
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre del Producto</label>
-            <input type="text" class="form-control" id="nombre" th:field="*{nombre}" required>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
+            <h1 class="text-3xl font-bold mb-6" th:text="${producto.id == null ? 'Registrar Nuevo Producto' : 'Editar Producto'}"></h1>
+
+            <form th:action="@{/productos/guardar}" th:object="${producto}" method="post" class="space-y-4">
+
+                <input type="hidden" th:field="*{id}"/>
+
+                <div>
+                    <label for="codigo" class="block text-sm font-medium text-gray-700">Código</label>
+                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="codigo" th:field="*{codigo}" required>
+                </div>
+
+                <div>
+                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre del Producto</label>
+                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="nombre" th:field="*{nombre}" required>
+                </div>
+
+                <div>
+                    <label for="descripcion" class="block text-sm font-medium text-gray-700">Descripción</label>
+                    <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
+                </div>
+
+                <div>
+                    <label for="precioUnitario" class="block text-sm font-medium text-gray-700">Precio Unitario</label>
+                    <input type="number" step="0.01" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="precioUnitario" th:field="*{precioUnitario}" required>
+                </div>
+
+                <div>
+                    <label for="unidad" class="block text-sm font-medium text-gray-700">Unidad (Ej: KG, DOCENA, UNIDAD)</label>
+                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="unidad" th:field="*{unidad}">
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">Guardar Producto</button>
+                    <a th:href="@{/productos}" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Volver a la Lista</a>
+                </div>
+
+            </form>
         </div>
-
-        <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion" th:field="*{descripcion}" rows="3"></textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="precioUnitario" class="form-label">Precio Unitario</label>
-            <input type="number" step="0.01" class="form-control" id="precioUnitario" th:field="*{precioUnitario}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="unidad" class="form-label">Unidad (Ej: KG, DOCENA, UNIDAD)</label>
-            <input type="text" class="form-control" id="unidad" th:field="*{unidad}">
-        </div>
-
-        <button type="submit" class="btn btn-success">Guardar Producto</button>
-        <a th:href="@{/cliente/panel}" class="btn btn-secondary">Volver al Panel</a>
-
-    </form>
+    </main>
 </div>
+
+<script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        const userNameHeader = document.getElementById('userNameHeader');
+        if (userNameHeader) {
+            userNameHeader.textContent = [[${cliente.nombre}]] ? [[${cliente.nombre}]].split(' ')[0] : 'Usuario';
+        }
+    });
+</script>
 
 </body>
 </html>

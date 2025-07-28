@@ -35,8 +35,9 @@ public class ClientePanelController {
                 .orElseThrow(() -> new RuntimeException("Cliente de prueba no encontrado."));
         model.addAttribute("cliente", cliente);
 
-        // Obtener pedidos del cliente
+        // Obtener pedidos del cliente y ordenarlos por fecha de forma descendente
         List<Pedido> pedidos = pedidoService.getPedidosByClienteId(CLIENTE_ID_FIJO);
+        pedidos.sort(Comparator.comparing(Pedido::getFecha).reversed());
         model.addAttribute("pedidos", pedidos);
 
         // Obtener el último pedido (el más reciente)

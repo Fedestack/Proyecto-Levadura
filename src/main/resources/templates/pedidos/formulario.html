@@ -3,86 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${pedido.id == null ? 'Nuevo Pedido' : 'Editar Pedido'}">Formulario de Pedido</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap');
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+        /* Estilos para la lista de resultados de búsqueda */
+        #search-results-list {
+            position: absolute;
+            z-index: 10;
+            background-color: white;
+            border: 1px solid #e2e8f0; /* gray-300 */
+            border-radius: 0.5rem; /* rounded-lg */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
+            max-height: 200px;
+            overflow-y: auto;
+            width: calc(100% - 1rem); /* Ajustar al ancho del input con padding */
+            margin-top: 0.25rem; /* mt-1 */
+        }
+        #search-results-list div {
+            padding: 0.75rem 1rem; /* p-3 px-4 */
+            cursor: pointer;
+            border-bottom: 1px solid #f7fafc; /* gray-100 */
+        }
+        #search-results-list div:hover {
+            background-color: #f0f4f8; /* gray-100 */
+        }
+        #search-results-list div:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800">
 
-<div class="container mt-4">
-    <h1 th:text="${pedido.id == null ? 'Registrar Nuevo Pedido' : 'Editar Pedido'}"></h1>
-
-    <form id="pedidoForm" action="/pedidos/revisar" method="post">
-        <!-- Campo oculto para el ID del Pedido (para edición) -->
-        <input type="hidden" id="pedidoId" name="pedidoId" th:value="${pedido.id}" />
-
-        <!-- Campo oculto para el cliente. -->
-        <input type="hidden" id="clienteId" name="clienteId" th:value="${pedido.cliente != null ? pedido.cliente.id : 1L}" />
-
-        <!-- Campo oculto para los detalles del pedido (en formato JSON) -->
-        <input type="hidden" id="detallesJson" name="detallesJson" />
-
-        <!-- Caja de texto para Observaciones -->
-        <div class="mb-3">
-            <label for="observaciones" class="form-label">Observaciones del Pedido</label>
-            <textarea class="form-control" id="observaciones" name="observaciones" rows="3" th:text="${pedido.observaciones}"></textarea>
-        </div>
-
-        <!-- Sección para agregar productos -->
-        <div class="card">
-            <div class="card-header">
-                <h4>Detalle del Pedido</h4>
-            </div>
-            <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="producto-search" class="form-label">Buscar Producto</label>
-                        <input type="text" class="form-control mb-2" id="producto-search" placeholder="Escribe para buscar productos...">
-                        <select class="form-select" id="producto-selector">
-                            <option value="">Seleccione un producto</option>
-                            <option th:each="producto : ${productos}"
-                                    th:value="${producto.id}"
-                                    th:data-precio="${producto.precioUnitario}"
-                                    th:data-unidad="${producto.unidad}"
-                                    th:text="${producto.nombre}">
-                            </option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <label for="cantidad" class="form-label">Cantidad</label>
-                        <input type="number" class="form-control" id="cantidad" min="1" value="1">
-                        <small id="unidad-display" class="form-text text-muted"></small>
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="button" id="add-product-btn" class="btn btn-primary">Agregar Producto</button>
-                    </div>
+<div id="app">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="text-2xl font-bold text-blue-600">
+                    MiEmpresa
                 </div>
-
-                <!-- Tabla de productos agregados -->
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio Unitario</th>
-                        <th>Subtotal</th>
-                        <th>Acción</th>
-                    </tr>
-                    </thead>
-                    <tbody id="detalle-pedido-body">
-                    <!-- Las filas de productos se agregarán aquí dinámicamente -->
-                    </tbody>
-                </table>
-                <div class="text-end mt-3">
-                    <strong>Total del Pedido: <span id="total-pedido">0.00</span></strong>
+                <div class="flex items-center space-x-4">
+                    <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
+                    <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
+                        <span class="text-xl">&#128682;</span>
+                        <span>Cerrar Sesión</span>
+                    </button>
                 </div>
             </div>
         </div>
+    </header>
 
-        <div class="mt-4">
-            <button type="submit" class="btn btn-primary">Revisar Pedido</button>
-            <a th:href="@{/cliente/panel}" class="btn btn-secondary">Volver al Panel</a>
-        </div>
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <form id="pedidoForm" action="/pedidos/revisar" method="post">
+            <div class="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+                <!-- Left/Main Column -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- Form Card -->
+                    <section class="bg-white p-6 rounded-xl shadow-md">
+                        <h1 class="text-3xl font-bold mb-6" th:text="${pedido.id == null ? 'Registrar Nuevo Pedido' : 'Editar Pedido'}"></h1>
+                        
+                        <!-- Hidden Fields -->
+                        <input type="hidden" id="pedidoId" name="pedidoId" th:value="${pedido.id}" />
+                        <input type="hidden" id="clienteId" name="clienteId" th:value="${pedido.cliente != null ? pedido.cliente.id : 1L}" />
+                        <input type="hidden" id="detallesJson" name="detallesJson" />
 
-    </form>
+                        <!-- Observations -->
+                        <div class="mb-6">
+                            <label for="observaciones" class="block text-lg font-semibold text-gray-700 mb-2">Observaciones del Pedido</label>
+                            <textarea class="w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="observaciones" name="observaciones" rows="4" th:text="${pedido.observaciones}" placeholder="Ingrese aquí cualquier instrucción especial..."></textarea>
+                        </div>
+
+                        <!-- Order Details Section -->
+                        <div class="border-t pt-6">
+                            <h2 class="text-2xl font-bold mb-4">Detalle del Pedido</h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
+                                <!-- Left Column: Selector then Search -->
+                                <div class="md:col-span-3 flex flex-col space-y-4">
+                                    <div>
+                                        <label for="producto-selector" class="block text-sm font-medium text-gray-700 mb-1">Seleccionar Producto</label>
+                                        <select class="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="producto-selector">
+                                            <!-- Options will be populated by JavaScript -->
+                                        </select>
+                                    </div>
+                                    <div class="relative">
+                                        <label for="producto-search" class="block text-sm font-medium text-gray-700 mb-1">Buscar Producto</label>
+                                        <input type="text" class="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="producto-search" placeholder="Escribe para buscar...">
+                                        <div id="search-results-list"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Right Column: Cantidad then Agregar button -->
+                                <div class="md:col-span-3 flex flex-col justify-between">
+                                    <div>
+                                        <label for="cantidad" class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+                                        <input type="number" class="w-full border border-gray-300 rounded-lg shadow-sm p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="cantidad" min="1" value="1" onfocus="this.select()">
+                                        <small id="unidad-display" class="text-xs text-gray-500 mt-1"></small>
+                                    </div>
+                                    <div class="mt-auto">
+                                        <button type="button" id="add-product-btn" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors shadow-md">Agregar Producto</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Added Products Table -->
+                            <div class="overflow-x-auto mt-6 max-h-60 overflow-y-auto">
+                                <table class="min-w-full bg-white rounded-lg shadow">
+                                    <thead class="bg-gray-100">
+                                        <tr>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-600">Producto</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-600">Cantidad</th>
+                                            <th class="text-left py-3 px-4 font-semibold text-gray-600">Precio Unit.</th>
+                                            <th class="text-right py-3 px-4 font-semibold text-gray-600">Subtotal</th>
+                                            <th class="text-center py-3 px-4 font-semibold text-gray-600">Acción</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="detalle-pedido-body" class="divide-y divide-gray-200">
+                                        <!-- Rows will be added dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+
+                <!-- Right/Sidebar Column -->
+                <aside class="lg:col-span-1 space-y-8 mt-8 lg:mt-0">
+                    <section class="bg-white p-6 rounded-xl shadow-md">
+                        <h2 class="text-2xl font-bold mb-4">Resumen del Pedido</h2>
+                        <div class="text-right text-3xl font-bold text-gray-800 mb-6">
+                            <span>Total: $</span><span id="total-pedido-summary">0.00</span>
+                        </div>
+                        <div class="space-y-4">
+                            <button type="submit" class="w-full text-lg text-center p-4 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors shadow-md font-bold">Revisar Pedido</button>
+                            <a th:href="@{/cliente/panel}" class="w-full block text-lg text-center p-4 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors shadow-md font-bold">Volver al Panel</a>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </form>
+    </main>
 </div>
 
 <script th:inline="javascript">
@@ -93,26 +157,80 @@
         const cantidadInput = document.getElementById('cantidad');
         const unidadDisplay = document.getElementById('unidad-display');
         const detallePedidoBody = document.getElementById('detalle-pedido-body');
-        const totalPedidoSpan = document.getElementById('total-pedido');
+        const totalPedidoSummarySpan = document.getElementById('total-pedido-summary');
         const pedidoForm = document.getElementById('pedidoForm');
         const observacionesInput = document.getElementById('observaciones');
-        const clienteIdInput = document.getElementById('clienteId');
-        const pedidoIdInput = document.getElementById('pedidoId');
+        const searchResultsList = document.getElementById('search-results-list');
 
-        let detalles = []; // Array para almacenar los detalles del pedido
-        const allProductOptions = Array.from(productoSelector.options); // Copia de todas las opciones
+        let detalles = [];
+        // Store all products from Thymeleaf model directly in JavaScript
+        const allProducts = /*[[${productos}]]*/ [];
 
-        // Función para agregar una fila a la tabla de detalles y al array de detalles
+        // Function to populate the product selector with ALL products
+        function populateProductSelectorAll() {
+            productoSelector.innerHTML = '<option value="">Seleccione un producto</option>'; // Always add default option
+            allProducts.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = product.nombre;
+                option.dataset.precio = product.precioUnitario;
+                option.dataset.unidad = product.unidad;
+                productoSelector.appendChild(option);
+            });
+            updateUnidadDisplay(); // Update unit display after populating
+        }
+
+        // Function to display search results in the separate list
+        function displaySearchResults(filterTerm = '') {
+            searchResultsList.innerHTML = ''; // Clear previous results
+            if (filterTerm.length < 2) { // Only search if at least 2 characters are typed
+                return;
+            }
+
+            const lowerCaseFilterTerm = filterTerm.toLowerCase();
+            const filteredProducts = allProducts.filter(product => 
+                product.nombre.toLowerCase().includes(lowerCaseFilterTerm)
+            );
+
+            if (filteredProducts.length > 0) {
+                filteredProducts.forEach(product => {
+                    const resultItem = document.createElement('div');
+                    resultItem.textContent = product.nombre;
+                    resultItem.dataset.productId = product.id;
+                    resultItem.dataset.precio = product.precioUnitario;
+                    resultItem.dataset.unidad = product.unidad;
+                    resultItem.addEventListener('click', function() {
+                        // Set the selected product in the main selector
+                        productoSelector.value = product.id;
+                        updateUnidadDisplay();
+                        // Clear search results and input
+                        searchResultsList.innerHTML = '';
+                        productoSearch.value = '';
+                    });
+                    searchResultsList.appendChild(resultItem);
+                });
+            } else {
+                const noResults = document.createElement('div');
+                noResults.textContent = 'No se encontraron productos.';
+                noResults.className = 'text-gray-500';
+                searchResultsList.appendChild(noResults);
+            }
+        }
+
+        // Initial population of the main selector
+        populateProductSelectorAll();
+
         function addDetailRow(detail) {
             const newRow = document.createElement('tr');
             newRow.setAttribute('data-product-id', detail.productoId);
+            newRow.className = 'border-b last:border-b-0';
             newRow.innerHTML = `
-                <td>${detail.productoNombre}</td>
-                <td class="cantidad-display">${detail.cantidad} ${detail.unidad}</td>
-                <td>${detail.precioUnitario.toFixed(2)}</td>
-                <td class="subtotal-display">${(detail.cantidad * detail.precioUnitario).toFixed(2)}</td>
-                <td>
-                    <button type="button" class="btn btn-danger btn-sm remove-product-btn" data-product-id="${detail.productoId}">Eliminar</button>
+                <td class="py-3 px-4">${detail.productoNombre}</td>
+                <td class="py-3 px-4">${detail.cantidad} ${detail.unidad}</td>
+                <td class="py-3 px-4">$${detail.precioUnitario.toFixed(2)}</td>
+                <td class="py-3 px-4 text-right">$${(detail.cantidad * detail.precioUnitario).toFixed(2)}</td>
+                <td class="py-3 px-4 text-center">
+                    <button type="button" class="text-red-500 hover:text-red-700 font-semibold remove-product-btn" data-product-id="${detail.productoId}">Eliminar</button>
                 </td>
             `;
             detallePedidoBody.appendChild(newRow);
@@ -120,23 +238,19 @@
             updateTotalPrice();
         }
 
-        // Cargar datos del pedido si estamos en modo edición o si venimos de la pantalla de revisión
-        const initialPedido = [[${pedido}]] || {};
+        const initialPedido = /*[[${pedido}]]*/ {};
         if (initialPedido.observaciones || (initialPedido.detalles && initialPedido.detalles.length > 0)) {
-            // Cargar observaciones
             observacionesInput.value = initialPedido.observaciones || '';
-
-            // Cargar detalles del pedido
             if (initialPedido.detalles && initialPedido.detalles.length > 0) {
                 initialPedido.detalles.forEach(d => {
-                    const productoOption = allProductOptions.find(opt => opt.value == String(d.producto.id)); // Convertir a string
-                    if (productoOption) {
+                    const productData = allProducts.find(p => p.id == d.producto.id);
+                    if (productData) {
                         const detail = {
-                            productoId: Number(d.producto.id), // Asegurarse de que sea un número
+                            productoId: Number(productData.id),
                             cantidad: d.cantidad,
-                            precioUnitario: parseFloat(productoOption.dataset.precio),
-                            unidad: productoOption.dataset.unidad,
-                            productoNombre: productoOption.text
+                            precioUnitario: parseFloat(productData.precioUnitario),
+                            unidad: productData.unidad,
+                            productoNombre: productData.nombre
                         };
                         addDetailRow(detail);
                     }
@@ -145,39 +259,14 @@
         }
 
         function updateTotalPrice() {
-            let total = 0;
-            detalles.forEach(item => {
-                total += item.cantidad * item.precioUnitario;
-            });
-            totalPedidoSpan.textContent = total.toFixed(2);
+            let total = detalles.reduce((sum, item) => sum + (item.cantidad * item.precioUnitario), 0);
+            totalPedidoSummarySpan.textContent = total.toFixed(2);
         }
 
-        // Función para filtrar productos
         productoSearch.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            productoSelector.innerHTML = ''; // Limpiar opciones actuales
-            allProductOptions.forEach(option => {
-                if (option.value === '') { // Siempre mantener la opción "Seleccione un producto"
-                    productoSelector.appendChild(option);
-                } else if (option.textContent.toLowerCase().includes(searchTerm)) {
-                    productoSelector.appendChild(option);
-                }
-            });
-            // Si solo hay una opción (la de "Seleccione...") y el término de búsqueda no está vacío,
-            // o si la primera opción visible no es la de "Seleccione...", seleccionar la primera opción real.
-            if (productoSelector.options.length > 1 && productoSelector.options[0].value === '') {
-                productoSelector.selectedIndex = 1; // Seleccionar el primer producto real
-            } else if (productoSelector.options.length === 1 && searchTerm !== '') {
-                 productoSelector.selectedIndex = 0; // Mantener "Seleccione un producto" si no hay coincidencias
-            } else if (productoSelector.options.length === 0 && searchTerm !== '') {
-                // No hay opciones, no hacer nada
-            } else {
-                productoSelector.selectedIndex = 0; // Por defecto, seleccionar la primera opción
-            }
-            updateUnidadDisplay(); // Actualizar la unidad al filtrar
+            displaySearchResults(this.value);
         });
 
-        // Actualizar la unidad al seleccionar un producto
         productoSelector.addEventListener('change', updateUnidadDisplay);
 
         function updateUnidadDisplay() {
@@ -188,89 +277,66 @@
                 unidadDisplay.textContent = '';
             }
         }
-        updateUnidadDisplay(); // Llamar al cargar la página
+        updateUnidadDisplay();
 
         addProductBtn.addEventListener('click', function () {
             const selectedOption = productoSelector.options[productoSelector.selectedIndex];
-            if (!selectedOption.value) {
+            if (!selectedOption || !selectedOption.value) {
                 alert('Por favor, seleccione un producto.');
                 return;
             }
 
-            const productoId = Number(selectedOption.value); // Convertir a número aquí
-            const productoNombre = selectedOption.text;
+            const productoId = Number(selectedOption.value);
             const cantidad = parseInt(cantidadInput.value);
-            const precioUnitario = parseFloat(selectedOption.dataset.precio);
-            const unidad = selectedOption.dataset.unidad;
 
             if (isNaN(cantidad) || cantidad <= 0) {
                 alert('La cantidad debe ser un número mayor a cero.');
                 return;
             }
 
-            // Verificar si el producto ya está en los detalles
             const existingDetailIndex = detalles.findIndex(d => d.productoId === productoId);
 
             if (existingDetailIndex > -1) {
-                // Si existe, actualizar la cantidad y el precio unitario en el array de detalles
                 detalles[existingDetailIndex].cantidad += cantidad;
-                detalles[existingDetailIndex].precioUnitario = precioUnitario; // Asegurar que el precio unitario esté actualizado
                 const row = detallePedidoBody.querySelector(`tr[data-product-id="${productoId}"]`);
-                row.querySelector('.cantidad-display').textContent = `${detalles[existingDetailIndex].cantidad} ${unidad}`;
-                row.querySelector('.subtotal-display').textContent = (detalles[existingDetailIndex].cantidad * detalles[existingDetailIndex].precioUnitario).toFixed(2);
+                row.children[1].textContent = `${detalles[existingDetailIndex].cantidad} ${detalles[existingDetailIndex].unidad}`;
+                row.children[3].textContent = `$${(detalles[existingDetailIndex].cantidad * detalles[existingDetailIndex].precioUnitario).toFixed(2)}`;
             } else {
-                // Si no existe, agregar un nuevo detalle
                 const newDetail = {
                     productoId: productoId,
                     cantidad: cantidad,
-                    precioUnitario: precioUnitario,
-                    unidad: unidad,
-                    productoNombre: productoNombre // Para mostrar en la tabla
+                    precioUnitario: parseFloat(selectedOption.dataset.precio),
+                    unidad: selectedOption.dataset.unidad,
+                    productoNombre: selectedOption.text
                 };
-                addDetailRow(newDetail); // Usar la función para agregar la fila
+                addDetailRow(newDetail);
             }
+            updateTotalPrice();
 
-            // Limpiar campos
-            productoSearch.value = ''; // Limpiar búsqueda
-            productoSelector.selectedIndex = 0; // Resetear selector
-            productoSelector.innerHTML = ''; // Limpiar y rellenar con todas las opciones
-            allProductOptions.forEach(option => productoSelector.appendChild(option.cloneNode(true)));
+            productoSearch.value = '';
+            searchResultsList.innerHTML = ''; // Clear search results after adding product
+            populateProductSelectorAll(); // Reset main selector to all products
             cantidadInput.value = 1;
-            updateUnidadDisplay(); // Actualizar la unidad al limpiar
+            updateUnidadDisplay();
         });
 
-        // Event listener para el botón de eliminar
         detallePedidoBody.addEventListener('click', function (e) {
             if (e.target && e.target.classList.contains('remove-product-btn')) {
-                const productIdToRemove = Number(e.target.dataset.productId); // Convertir a número aquí
+                const productIdToRemove = Number(e.target.dataset.productId);
                 detalles = detalles.filter(item => item.productoId !== productIdToRemove);
                 e.target.closest('tr').remove();
                 updateTotalPrice();
-                console.log('Detalles después de eliminar:', detalles);
-                console.log('Total después de eliminar:', totalPedidoSpan.textContent);
             }
         });
 
-        // Manejar el envío del formulario
         pedidoForm.addEventListener('submit', function (event) {
-            event.preventDefault(); // Prevenir el envío tradicional por ahora para validar
-
             if (detalles.length === 0) {
+                event.preventDefault();
                 alert('Por favor, agregue al menos un producto al pedido.');
                 return;
             }
-
-            // Poblar los campos ocultos antes de enviar
-            document.getElementById('detallesJson').value = JSON.stringify(detalles);
-            console.log("Detalles a enviar (antes de stringify):");
-            console.log(detalles);
-            console.log("JSON de detalles a enviar:", document.getElementById('detallesJson').value);
-
-            // Enviar el formulario
-            pedidoForm.submit();
+            document.getElementById('detallesJson').value = JSON.stringify(detalles.map(d => ({ productoId: d.productoId, cantidad: d.cantidad })));
         });
-    });
-</script>
     });
 </script>
 

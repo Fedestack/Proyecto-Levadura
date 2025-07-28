@@ -87,10 +87,267 @@
                         <section class="bg-white p-6 rounded-xl shadow-md">
                             <h2 class="text-2xl font-bold mb-4">Tus 3 pedidos más recientes</h2>
                             <div id="recent-orders-list" class="space-y-4">
-                                <div th:each="pedido : ${pedidos}" class="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                                <div th:each="pedido, iterStat : ${pedidos}" th:if="${iterStat.index < 3}" class="border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
                                     <div>
                                         <p class="font-bold" th:text="'Pedido #' + ${pedido.id}"></p>
-                                        <p class="text-sm text-gray-600" th:text="'Realizado el ' + ${#temporals.format(pedido.fecha, 'dd de MMMM de yyyy')} + ' - Total: $' + ${#numbers.formatDecimal(pedido.total, 0, 'COMMA', 2, 'POINT')}"></p>
+                                        <p class="text-sm text-gray-600" th:text="'Realizado el ' + ${#temporals.format(pedido.fecha, 'dd de MMMM de yyyy')} + ' - Total: 
+                            <div class="text-center mt-6">
+                                <a th:href="@{/pedidos}" class="bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                                    Ver historial completo de pedidos
+                                </a>
+                            </div>
+                        </section>
+
+                        <!-- Monthly Spending Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                             <h2 class="text-2xl font-bold mb-4">Resumen de gastos mensuales</h2>
+                             <p class="text-gray-600 mb-4">Este es un resumen de tus compras en los últimos meses.</p>
+                             <div class="chart-container">
+                                <canvas id="spendingChart"></canvas>
+                             </div>
+                        </section>
+                    </div>
+
+                    <!-- Right/Sidebar Column -->
+                    <aside class="lg:col-span-1 space-y-8 mt-8 lg:mt-0">
+                        <!-- Quick Actions Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                            <h2 class="text-2xl font-bold mb-4">Acciones Rápidas</h2>
+                            <nav id="quick-actions-nav" class="space-y-3">
+                                <a th:href="@{/pedidos/nuevo}" class="w-full flex items-center p-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                                    <span class="text-3xl mr-4">&#128722;</span>
+                                    <span class="font-bold text-lg">Realizar Nuevo Pedido</span>
+                                </a>
+                                <a th:href="@{/cliente/pedidos-automaticos}" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128467;</span> <!-- Icono de calendario o similar -->
+                                    <span class="font-bold text-lg">Pedidos Automáticos</span>
+                                </a>
+                                <a href="#account-details-view" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128100;</span>
+                                    <span class="font-bold text-lg">Mis Datos Personales</span>
+                                </a>
+                                
+                                <a th:href="@{/cliente/metodos-pago}" class="w-full flex items-center p-4 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                                    <span class="text-3xl mr-4">&#128179;</span>
+                                    <span class="font-bold text-lg">Métodos de Pago</span>
+                                </a>
+                            </nav>
+                        </section>
+
+                         <!-- Help & Support Card -->
+                        <section class="bg-white p-6 rounded-xl shadow-md">
+                             <h2 class="text-2xl font-bold mb-4">¿Necesitas Ayuda?</h2>
+                             <div class="space-y-4">
+                                <p class="text-gray-600">Estamos para servirte. Contáctanos si tienes alguna duda.</p>
+                                <div>
+                                    <p class="font-semibold">Llámanos al:</p>
+                                    <a href="tel:+541155551234" class="text-blue-600 font-bold text-lg hover:underline">(011) 5555-1234</a>
+                                </div>
+                                <div>
+                                    <p class="font-semibold">Escríbenos un correo:</p>
+                                    <a href="mailto:soporte @miempresa.com" class="text-blue-600 font-bold text-lg hover:underline">soporte @miempresa.com</a>
+                                </div>
+                                 <a href="#" class="inline-block w-full text-center mt-3 bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors">
+                                    Ir a Preguntas Frecuentes
+                                </a>
+                             </div>
+                        </section>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- Account Details View (hidden by default) -->
+            <div id="account-details-view" class="hidden">
+                 <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
+                    <form th:action="@{/cliente/panel/actualizar-datos}" method="post" class="space-y-6">
+                        <div>
+                            <label for="nombre" class="block text-sm font-bold text-gray-600">Nombre Completo</label>
+                            <input type="text" id="nombre" name="nombre" th:value="${cliente.nombre}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                         <div>
+                            <label for="direccion" class="block text-sm font-bold text-gray-600">Dirección Principal</label>
+                            <input type="text" id="direccion" name="direccion" th:value="${cliente.direccion}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                         <div>
+                            <label for="direccion2" class="block text-sm font-bold text-gray-600">Dirección Secundaria</label>
+                            <input type="text" id="direccion2" name="direccion2" th:value="${cliente.direccion2}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                        <div>
+                            <label for="telefono" class="block text-sm font-bold text-gray-600">Teléfono</label>
+                            <input type="text" id="telefono" name="telefono" th:value="${cliente.telefono}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                        <div>
+                            <label for="cuit" class="block text-sm font-bold text-gray-600">CUIT</label>
+                            <input type="text" id="cuit" name="cuit" th:value="${cliente.cuit}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                        </div>
+                        <hr>
+                        <div>
+                           <label class="text-sm font-bold text-gray-600">Miembro desde</label>
+                           <p id="accountMemberSince" class="text-lg mt-1">Fecha de registro no disponible</p>
+                        </div>
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            Guardar Cambios
+                        </button>
+                    </form>
+                    <button id="back-to-dashboard" class="w-full text-center mt-6 bg-gray-200 text-gray-800 font-bold py-3 px-6 rounded-lg hover:bg-gray-300 transition-colors">
+                        &larr; Volver al Panel
+                    </button>
+                 </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = {
+                name: [[${cliente.nombre}]],
+                email: 'elena.r @email.com', // No tenemos email en Cliente, mantener fijo o eliminar
+                memberSince: '12 de marzo de 2022' // No tenemos fecha de registro en Cliente, mantener fijo o eliminar
+            };
+
+            const ordersData = [[${pedidos}]]; // Obtener pedidos del modelo
+
+            // Ordenar pedidos por fecha de forma descendente y tomar los 3 más recientes
+            const recentOrders = ordersData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).slice(0, 3);
+
+            // Adaptar ordersData para el formato del template
+            const formattedOrdersData = recentOrders.map(pedido => ({
+                id: pedido.id,
+                date: new Date(pedido.fecha).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' }),
+                total: pedido.total.toFixed(2).replace('.', ','), // Formato ARS
+                status: pedido.estado.toLowerCase(),
+                statusText: pedido.estado
+            }));
+
+            // Datos de ejemplo para el gráfico (necesitaríamos lógica de backend para esto)
+            const spendingData = {
+                labels: ['Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio'],
+                values: [1500, 2100, 1800, 3210, 1800, 2450] // Valores de ejemplo
+            };
+
+            // Populate User Data
+            document.getElementById('userNameHeader').textContent = userData.name.split(' ')[0];
+            document.getElementById('userNameMain').textContent = userData.name.split(' ')[0];
+            // document.getElementById('accountEmail').textContent = userData.email; // Descomentar si agregamos email al Cliente
+            // document.getElementById('accountMemberSince').textContent = userData.memberSince; // Descomentar si agregamos fecha de registro
+
+
+            // Populate Recent Orders
+            const ordersList = document.getElementById('recent-orders-list');
+            ordersList.innerHTML = ''; // Limpiar contenido estático
+            formattedOrdersData.slice(0, 3).forEach(order => { // Mostrar solo los 3 más recientes
+                const orderDiv = document.createElement('div');
+                orderDiv.className = 'border rounded-lg p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0';
+                orderDiv.innerHTML = `
+                    <div>
+                        <p class="font-bold">Pedido #${order.id}</p>
+                        <p class="text-sm text-gray-600">Realizado el ${order.date} - Total: $${order.total}</p>
+                    </div>
+                    <div class="flex items-center space-x-4 w-full sm:w-auto">
+                        <span class="text-sm font-bold px-3 py-1 rounded-full status-${order.status}">${order.statusText}</span>
+                        <a href="/pedidos/editar/${order.id}" class="text-sm text-blue-600 hover:underline font-semibold">Ver detalle</a>
+                    </div>
+                `;
+                ordersList.appendChild(orderDiv);
+            });
+
+            // Spending Chart
+            const ctx = document.getElementById('spendingChart').getContext('2d');
+            const spendingChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: spendingData.labels,
+                    datasets: [{
+                        label: 'Gastos por Mes ($)',
+                        data: spendingData.values,
+                        backgroundColor: 'rgba(59, 130, 246, 0.5)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // View Switching Logic
+            const dashboardView = document.getElementById('dashboard-view');
+            const accountDetailsView = document.getElementById('account-details-view');
+            const backToDashboardButton = document.getElementById('back-to-dashboard');
+
+            function showView(viewId) {
+                dashboardView.classList.add('hidden');
+                accountDetailsView.classList.add('hidden');
+                document.getElementById(viewId).classList.remove('hidden');
+            }
+
+            // Handle initial view based on URL hash
+            if (window.location.hash === '#account-details-view') {
+                showView('account-details-view');
+            } else {
+                showView('dashboard-view');
+            }
+
+            // Handle back button in account details view
+            backToDashboardButton.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default link behavior
+                window.history.pushState({}, '', window.location.pathname); // Change URL without reloading
+                showView('dashboard-view');
+            });
+
+            // Handle browser's back/forward buttons
+            window.addEventListener('popstate', (event) => {
+                if (window.location.hash === '#account-details-view') {
+                    showView('account-details-view');
+                } else {
+                    showView('dashboard-view');
+                }
+            });
+        });
+    </script>
+</body>
+</html> + ${#numbers.formatDecimal(pedido.total, 0, 'COMMA', 2, 'POINT')}"></p>
                                     </div>
                                     <div class="flex items-center space-x-4 w-full sm:w-auto">
                                         <span class="text-sm font-bold px-3 py-1 rounded-full" th:classappend="'status-' + ${pedido.estado.toLowerCase()}" th:text="${pedido.estado}"></span>
@@ -219,8 +476,11 @@
 
             const ordersData = [[${pedidos}]]; // Obtener pedidos del modelo
 
+            // Ordenar pedidos por fecha de forma descendente y tomar los 3 más recientes
+            const recentOrders = ordersData.sort((a, b) => new Date(b.fecha) - new Date(a.fecha)).slice(0, 3);
+
             // Adaptar ordersData para el formato del template
-            const formattedOrdersData = ordersData.map(pedido => ({
+            const formattedOrdersData = recentOrders.map(pedido => ({
                 id: pedido.id,
                 date: new Date(pedido.fecha).toLocaleDateString('es-AR', { year: 'numeric', month: 'long', day: 'numeric' }),
                 total: pedido.total.toFixed(2).replace('.', ','), // Formato ARS
