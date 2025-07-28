@@ -15,6 +15,7 @@ public class Cliente {
 
    @Column(nullable = false)
    private String nombre;
+   private String nombreLocal;
 
    private String direccion;
    private String direccion2;

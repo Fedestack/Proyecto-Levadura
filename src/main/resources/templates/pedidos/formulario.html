@@ -33,6 +33,12 @@
         #search-results-list div:last-child {
             border-bottom: none;
         }
+        textarea#observaciones {
+            min-height: 40px; /* Aproximadamente una línea de texto */
+            max-height: 160px; /* Aproximadamente 4 líneas de texto (40px * 4) */
+            overflow-y: auto;
+            resize: vertical;
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800">
@@ -43,7 +49,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <div class="text-2xl font-bold text-blue-600">
-                    MiEmpresa
+                    <a th:href="@{/cliente/panel}" class="text-blue-600 hover:text-blue-800">Rocha</a>
                 </div>
                 <div class="flex items-center space-x-4">
                     <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
@@ -74,7 +80,7 @@
                         <!-- Observations -->
                         <div class="mb-6">
                             <label for="observaciones" class="block text-lg font-semibold text-gray-700 mb-2">Observaciones del Pedido</label>
-                            <textarea class="w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="observaciones" name="observaciones" rows="4" th:text="${pedido.observaciones}" placeholder="Ingrese aquí cualquier instrucción especial..."></textarea>
+                            <textarea class="w-full border border-gray-300 rounded-lg shadow-sm p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" id="observaciones" name="observaciones" th:text="${pedido.observaciones}" placeholder="Ingrese aquí cualquier instrucción especial..."></textarea>
                         </div>
 
                         <!-- Order Details Section -->
@@ -161,6 +167,15 @@
         const pedidoForm = document.getElementById('pedidoForm');
         const observacionesInput = document.getElementById('observaciones');
         const searchResultsList = document.getElementById('search-results-list');
+
+        // Auto-resize textarea
+        function autoResizeTextarea() {
+            observacionesInput.style.height = 'auto';
+            observacionesInput.style.height = (observacionesInput.scrollHeight) + 'px';
+        }
+        observacionesInput.addEventListener('input', autoResizeTextarea);
+        // Initial resize in case of pre-filled content
+        autoResizeTextarea();
 
         let detalles = [];
         // Store all products from Thymeleaf model directly in JavaScript

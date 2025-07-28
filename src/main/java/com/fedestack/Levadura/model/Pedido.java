@@ -19,7 +19,7 @@ public class Pedido {
    private Long id;
 
    private LocalDateTime fecha;
-   private String estado; // Ej: "NUEVO", "EN_PREPARACION", "LISTO", "ENTREGADO"
+   private String estado; // Ej: "INGRESADO", "EN_PREPARACION", "ENTREGADO"
    private BigDecimal total;
    private String observaciones;
 

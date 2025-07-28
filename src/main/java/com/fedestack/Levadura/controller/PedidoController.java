@@ -277,4 +277,32 @@ public class PedidoController {
         pedidoService.deletePedido(id);
         return "redirect:/pedidos";
     }
+
+    @PostMapping("/confirmar/{id}")
+    public String confirmarPedido(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            pedidoService.updatePedidoEstado(id, "EN_PREPARACION");
+            redirectAttributes.addFlashAttribute("mensaje", "Pedido #" + id + " confirmado y en preparación.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", "Error al confirmar pedido: " + e.getMessage());
+        }
+        return "redirect:/pedidos";
+    }
+
+    @PostMapping("/entregar/{id}")
+    public String entregarPedido(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
+        try {
+            pedidoService.updatePedidoEstado(id, "ENTREGADO");
+            redirectAttributes.addFlashAttribute("mensaje", "Pedido #" + id + " marcado como entregado.");
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("error", "Error al entregar pedido: " + e.getMessage());
+        }
+        return "redirect:/pedidos";
+    }
+
+    @PostMapping("/eliminar-todos")
+    public String eliminarTodosLosPedidos() {
+        pedidoService.deleteAllPedidos();
+        return "redirect:/pedidos";
+    }
 }

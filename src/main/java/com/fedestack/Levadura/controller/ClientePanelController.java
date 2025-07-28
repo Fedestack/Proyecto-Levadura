@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 import java.util.Comparator;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.time.YearMonth;
+import java.util.LinkedHashMap;
+import java.math.BigDecimal;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/cliente")
@@ -46,11 +52,44 @@ public class ClientePanelController {
                 .orElse(null);
         model.addAttribute("ultimoPedido", ultimoPedido);
 
+        // Calcular gastos mensuales
+        Map<String, BigDecimal> monthlySpending = calculateMonthlySpending(pedidos, 6); // Últimos 6 meses
+        model.addAttribute("spendingLabels", monthlySpending.keySet());
+        model.addAttribute("spendingValues", monthlySpending.values());
+
         return "cliente/panel"; // Nombre de la plantilla Thymeleaf
+    }
+
+    private Map<String, BigDecimal> calculateMonthlySpending(List<Pedido> pedidos, int monthsToInclude) {
+        Map<YearMonth, BigDecimal> monthlyTotals = new LinkedHashMap<>();
+        YearMonth currentMonth = YearMonth.now();
+
+        // Inicializar los últimos 'monthsToInclude' meses con 0
+        for (int i = monthsToInclude - 1; i >= 0; i--) {
+            YearMonth month = currentMonth.minusMonths(i);
+            monthlyTotals.put(month, BigDecimal.ZERO);
+        }
+
+        // Sumar los totales de los pedidos a los meses correspondientes
+        for (Pedido pedido : pedidos) {
+            YearMonth pedidoMonth = YearMonth.from(pedido.getFecha());
+            if (monthlyTotals.containsKey(pedidoMonth)) {
+                monthlyTotals.computeIfPresent(pedidoMonth, (key, val) -> val.add(pedido.getTotal()));
+            }
+        }
+
+        // Convertir a un mapa de String (nombre del mes) a BigDecimal
+        Map<String, BigDecimal> formattedMonthlySpending = new LinkedHashMap<>();
+        for (Map.Entry<YearMonth, BigDecimal> entry : monthlyTotals.entrySet()) {
+            String monthName = entry.getKey().getMonth().getDisplayName(TextStyle.FULL, new Locale("es", "ES"));
+            formattedMonthlySpending.put(monthName, entry.getValue());
+        }
+        return formattedMonthlySpending;
     }
 
     @PostMapping("/panel/actualizar-datos")
     public String actualizarDatosCliente(@RequestParam("nombre") String nombre,
+                                         @RequestParam("nombreLocal") String nombreLocal,
                                          @RequestParam("telefono") String telefono,
                                          @RequestParam("cuit") String cuit,
                                          @RequestParam("direccion") String direccion,
@@ -59,6 +98,7 @@ public class ClientePanelController {
                 .orElseThrow(() -> new RuntimeException("Cliente de prueba no encontrado."));
 
         cliente.setNombre(nombre);
+        cliente.setNombreLocal(nombreLocal);
         cliente.setTelefono(telefono);
         cliente.setCuit(cuit);
         cliente.setDireccion(direccion);

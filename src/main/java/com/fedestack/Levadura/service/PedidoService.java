@@ -50,8 +50,21 @@ public class PedidoService {
         pedidoRepository.deleteById(id);
     }
 
+    @Transactional
+    public void deleteAllPedidos() {
+        detalleRepository.deleteAll(); // Eliminar detalles primero si hay restricciones de clave externa
+        pedidoRepository.deleteAll();
+    }
+
     public Optional<Pedido> getPedidoById(Long id) {
         return pedidoRepository.findById(id);
+    }
+
+    public void updatePedidoEstado(Long pedidoId, String nuevoEstado) {
+        Pedido pedido = pedidoRepository.findById(pedidoId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado con ID: " + pedidoId));
+        pedido.setEstado(nuevoEstado);
+        pedidoRepository.save(pedido);
     }
 
     public List<Pedido> getPedidosByClienteId(Long clienteId) {
@@ -81,7 +94,7 @@ public class PedidoService {
         } else {
             // Si es un nuevo pedido, establecer fecha y estado inicial
             pedido.setFecha(LocalDateTime.now());
-            pedido.setEstado("NUEVO");
+            pedido.setEstado("INGRESADO");
             log.info("Creando nuevo pedido.");
         }
 
