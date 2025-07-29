@@ -4,9 +4,11 @@ import com.fedestack.Levadura.model.DetallePedido;
 import com.fedestack.Levadura.model.DetallePedidoAutomatico;
 import com.fedestack.Levadura.model.Pedido;
 import com.fedestack.Levadura.model.PedidoAutomatico;
+import com.fedestack.Levadura.model.ListaDePrecios;
 import com.fedestack.Levadura.model.Producto;
 import com.fedestack.Levadura.repository.PedidoAutomaticoRepository;
 import com.fedestack.Levadura.repository.ProductoRepository;
+import com.fedestack.Levadura.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,9 @@ public class PedidoAutomaticoService {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private ProductoService productoService;
 
     public PedidoAutomatico savePedidoAutomatico(PedidoAutomatico pedidoAutomatico) {
         return pedidoAutomaticoRepository.save(pedidoAutomatico);
@@ -65,7 +70,13 @@ public class PedidoAutomaticoService {
             DetallePedido dp = new DetallePedido();
             dp.setProducto(producto);
             dp.setCantidad(dpa.getCantidad());
-            dp.setPrecioCongelado(producto.getPrecioUnitario()); // Tomar el precio actual del producto
+            // Obtener la lista de precios del cliente asociado al pedido automático
+            // Asumimos que se usa la lista de precios 'Excel' para los pedidos automáticos
+            ListaDePrecios listaDePreciosCliente = pa.getCliente().getListaPrecioExcel();
+            if (listaDePreciosCliente == null) {
+                throw new IllegalStateException("El cliente no tiene una lista de precios Excel asignada.");
+            }
+            dp.setPrecioCongelado(productoService.getPrecioForProductoAndLista(producto, listaDePreciosCliente));
             detallesReales.add(dp);
         }
 

@@ -6,26 +6,44 @@ import lombok.Data;
 
 @Data
 @Entity
-
 public class Cliente {
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-   @Column(nullable = false)
-   private String nombre;
-   private String nombreLocal;
+    @Column(unique = true)
+    private String codigo; // Código del cliente del CSV
 
-   private String direccion;
-   private String direccion2;
-   private String telefono;
-   private String cuit;
+    private String razonSocial; // Razón Social / Nombre del comercio
+    private String nombreCompleto; // Nombre y Apellido del cliente/contacto
 
-   // --- Relaciones ---
-   @OneToOne(fetch = FetchType.LAZY) // Un Cliente tiene una cuenta de Usuario. Fetch.LAZY para eficiencia.
-   @JoinColumn(name = "usuario_id", referencedColumnName = "id") // Así se llamará la clave foránea en la tabla Cliente
-   @JsonIgnore // Evita problemas de bucles infinitos al convertir a JSON
-   private Usuario usuario;
+    private String domicilio;
+    private String localidad;
+    private String cuit;
+    private String telefono;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lista_de_precios_excel_id")
+    private ListaDePrecios listaPrecioExcel;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lista_de_precios_gas_id")
+    private ListaDePrecios listaPrecioGas;
+    private String formaDePago;
+    private String frecuenciaDePago;
+    private String tipoFactura; // A, B, C
+    private String horarioEntrega;
+    private String reparto;
+
+    @Column(length = 1024) // Aumentar longitud para comentarios largos
+    private String comentarios;
+
+
+    // --- Relaciones ---
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "usuario_id", referencedColumnName = "id")
+    @JsonIgnore
+    private Usuario usuario;
 
 }

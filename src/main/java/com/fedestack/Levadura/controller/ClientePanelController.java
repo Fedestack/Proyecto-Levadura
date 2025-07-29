@@ -88,21 +88,21 @@ public class ClientePanelController {
     }
 
     @PostMapping("/panel/actualizar-datos")
-    public String actualizarDatosCliente(@RequestParam("nombre") String nombre,
-                                         @RequestParam("nombreLocal") String nombreLocal,
+    public String actualizarDatosCliente(@RequestParam("razonSocial") String razonSocial,
+                                         @RequestParam("nombreCompleto") String nombreCompleto,
                                          @RequestParam("telefono") String telefono,
                                          @RequestParam("cuit") String cuit,
-                                         @RequestParam("direccion") String direccion,
-                                         @RequestParam(value = "direccion2", required = false) String direccion2) {
+                                         @RequestParam("domicilio") String domicilio,
+                                         @RequestParam("localidad") String localidad) {
         Cliente cliente = clienteService.getClienteById(CLIENTE_ID_FIJO)
                 .orElseThrow(() -> new RuntimeException("Cliente de prueba no encontrado."));
 
-        cliente.setNombre(nombre);
-        cliente.setNombreLocal(nombreLocal);
+        cliente.setRazonSocial(razonSocial);
+        cliente.setNombreCompleto(nombreCompleto);
         cliente.setTelefono(telefono);
         cliente.setCuit(cuit);
-        cliente.setDireccion(direccion);
-        cliente.setDireccion2(direccion2);
+        cliente.setDomicilio(domicilio);
+        cliente.setLocalidad(localidad);
 
         clienteService.saveCliente(cliente);
 

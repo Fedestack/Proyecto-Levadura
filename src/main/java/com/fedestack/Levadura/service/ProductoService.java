@@ -1,10 +1,15 @@
 package com.fedestack.Levadura.service;
 
 import com.fedestack.Levadura.model.Producto;
+import com.fedestack.Levadura.model.ListaDePrecios;
+import com.fedestack.Levadura.model.Precio;
+import com.fedestack.Levadura.model.Producto;
+import com.fedestack.Levadura.repository.PrecioRepository;
 import com.fedestack.Levadura.repository.ProductoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,6 +18,9 @@ public class ProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private PrecioRepository precioRepository;
 
     /**
      * Obtiene todos los productos de la base de datos.
@@ -56,5 +64,21 @@ public class ProductoService {
     public List<Producto> searchProductos(Optional<String> searchTerm) {
         return searchTerm.map(term -> productoRepository.findByNombreContainingIgnoreCase(term))
                 .orElse(productoRepository.findAll());
+    }
+
+    /**
+     * Obtiene el precio de un producto para una lista de precios específica.
+     * @param producto El producto.
+     * @param listaDePrecios La lista de precios.
+     * @return El valor del precio.
+     * @throws IllegalArgumentException si el precio no se encuentra para la lista de precios dada.
+     */
+    public BigDecimal getPrecioForProductoAndLista(Producto producto, ListaDePrecios listaDePrecios) {
+        return precioRepository.findByProductoAndListaDePrecios(producto, listaDePrecios)
+                .map(Precio::getValor)
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Precio no encontrado para el producto " + producto.getNombre() +
+                        " en la lista de precios " + listaDePrecios.getNombre()
+                ));
     }
 }

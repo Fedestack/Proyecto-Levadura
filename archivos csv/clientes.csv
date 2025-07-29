@@ -1,0 +1,197 @@
+1;2;3;4;5;6;7;;;;;;;
+Codigo;Nombre Cliente;Lista de Precio Excel;Direccion;Lista de Precio Gas;Comentarios;Telefono/Contacto;;Forma de Pago;Forma;Factura;Tipo;Hs. Entrega;Reparto
+001;AMODIL;6;"Intendente Neyer 1643; Beccar";;Envio Saldo los 1 eros por Mail;rrhh@amodil.com     German;CC;Mensual;Efectivo;;;5:30 hs;1
+002;PAN DE ANGEL;5;Gral  guido 1143 Beccar;1;Envio saldo los Lunes temprano;11-3637-6383 ANA;CC;Semanal;;Semanal;A;6/7AM;
+003;MONICA TUYUTI;5;Tuyuti 780, Tigre, Rincon;1;;11 5806-2475;Contado;Diario;Efectivo;;;8:00 hs;3
+004;V Y B ;5;Tuyuti 231;1;;11 6112-4865;Contado;Diario;Efectivo;;;;
+005;EL TORO;5;"Av Santa Maria y 9 de Julio; Tigre, Rincon";3;;11 5879-1234;Contado;Diario;Efectivo;;;8:00 ha;3
+006;LOS ANTOJOS;5;Martin Rodriguez 323;1;Envio saldo los Lunes temprano;11 3471-0455;CC;Semanal;Efectivo;;;8:00hs;3
+007;LINIERS;15;"Av Liniers 1699; Tigre";4;Envio Saldo a Matias 1 ero de mes;Celu Pana;CC;Mensual;Efectivo;;;6:30hs;2
+008;MARCOS SASTRE;7;BELGRANO 620, TIGRE;4;;1140895492 - martin;Contado;Diario;Efectivo;;;7/7:30;
+009;ALICIA;5;"Montevideo y Albarellos; Tigre";1;;11 2317-0381;Contado;Diario;Efectivo;;;9:00 hs;2
+010;ALE FIAMBRE;5;"Av Dardo Rocha 954; Tigre";3;; 11 6960-6565;;;;;;9:00hs;2
+011;DERIVA RESTO;5;Catamarca 2291, entre bogota y caracas;1;;114481001;Contado;;Efectivo;;;12hs;
+012;ARROYO FELIPE;5;"Estacion Fluvial; Tigre";1;Generalmente paga los Domingos sin que le pase la cuenta;1165705202;CC;Semanal;MP;;;8:00hs;2
+013;VANINA;5;"Italia 885; Tigre";1;;11 5493-7922;;;;;;;
+014;VIVANCO;8;"Bartolome Mitre 74; Tigre";;Envio saldo los Lunes temprano;1155123719 Federico;CC;Cheque;Semanal;;A;7:00hs;2
+015;ESCUELA DON ORIONE;5;ROCHA 1664;1;;1151140898;;;;;;;
+016;EL VASCO;5;"Av Cazon 1487; Tigre";7;;Celu Pana;Contado;Diario;Efectivo;;;9/10 hs;2
+017;TIGRE MARKET;5;"Castelli 176; Tigre";8;Envio el saldo 1 ero de mes;1133639999 Coco;CC;Mensual;Efectivo;;;10:30 hs;3
+018;EL BODEGON;5;"Italia 1398; Tigre";1;;1160188678 Maria;Contado;Diario;Efectivo;;;9/10 hs;2
+019;SABORES DUT;5;"Remeros Dut Manzana 6 Local 8; Tigre, Rincon";9;;11 3334-4579;Contado;Diario;Efectivo;;;9:00hs;3
+020;GRACIELA BILOCH;5;"Billoch 375; Tigre";10;;11 2462-2531;;;;;;9:00hs;3
+021;GRANJA C Y S;5;"Williams 888;  Tigre";2;;11 6357-9321;Contado;Diario;Efectivo;;;9/10hs ;3
+022;UBA;5;;1;Envio saldo los Sabados temprano y se cobra mismo dia;1126769507 Facundo;CC;Semanal;Efectivo;Cuando Trasnfiere;B;;
+023;TIMON DORADO;5;"Estacion Fluvial; Tigre";11;Envio saldo los Lunes temprano ( paga a semana vencida );1144260007 Romina;CC;Semanal;MP;Se factura cuando transfiere;B;8:00 hs;2
+024;COT;6;"Lisandro de la Torre 2500; Troncos de Talar";1;;1137562075 Roberto;Contado;Diario;Efectivo;;;;
+025;UTN;6;"Hipolito Yrigoyen; Puente Pacheco";1;;1134478285 Estefania;Contado;Semanal;Efectivo;;;;
+026;GLORIAS;9;"Av Dardo Rocha 919; Tigre";12;Envio saldo los Lunes temprano;1169033138 Lucas;CC;Semanal;Efectivo;;;7 y 9 hs;2
+027;POMPEYA;10;"Av Cazon 1186; Tigre";13;Envio saldo los Lunes temprano;1163362559 Lorena;CC;Semanal;Efectivo;;;10 hs;3
+028;ROWING;5;"Coronel Morales 1563; Tigre";1;Envio Saldo 1ero de mes;1157229213 Agustin;CC;Mensual;Efectivo;Mensual;A;10hs;3
+029;BRODERS;5;;14;;Celu Pana;Contado;Diario;Efectivo;;;12/13hs;3
+030;ESCUELA N 3;5;ENCISO 1409;14;;;Contado;Diario;Efectivo;;;;
+031;TIA LITA;16;"Paseo Victorica 134; Tigre";15;Envio saldo los Lunes temprano;1162701894 Maxi;CC;Semanal;MP;Semanal;A;11/12hs;3
+032;LOS ISLEÑOS;5;"Sarmiento 49; Tigre Puerto de Frutos";15;;;;;;;;;
+033;NEGRI;9;"Sarmiento 7; Tigre Puerto de Frutos";1;Envio Saldo Los Lunes Luego de las 10:00 am;1160439139 Agustin;CC;Semanal;MP;Semanal;A;9/10 hs;2
+034;PALAS;5;;16;Envio saldo los Lunes temprano;1150369343 Federico;CC;Semanal;Efectivo;;;RETIRA;
+035;IL FIUME;5;"Paseo Victorica 96;  Tigre";1;;1151644583 Lucas;Contado;Diario;Efectivo;;;9/10 hs;2
+036;COLEGIO MARCOS SASTRE;5;LINIERS 1024, TIGRE;13;;1140895492;;;Efectivo;;;8/9HS;
+037;AGUSTIN/LUCAS CARNICERIA;5;RETIRA MOSTRADOR;1;;;;;;;;RETIRA 7AM;
+038;ALCAZAR;5;RETIRA O STURLA;1;Envio saldo los Lunes temprano;1154199431 Marcelo;CC;Semanal;MP/Efectivo;Cuando Trasnfiere;B;RETIRA 7AM;
+039;BEMVELON/REMO;5;RETIRA MOSTRADOR;11;;;;;;;;;
+040;RIO TIGRE HOTEL;5;LAVALLE 289, TIGRE;1;;;;;;;;;
+041;ESCUELA N 1;7;ROCHA 250;1;;;;;;;;;
+042;CLUB DEPORTIVO;5;;1;;;;;;;;;
+043;BORASO;5;RETIRA MOSTRADOR;1;Envio Saldo 1ero de mes;1161037893 Ramiro;CC;Mensual;Efectivo;Mensual;;RETIRA 9/10hs;
+044;CATERING BRAZZI;11;ITUZAINGO 1876, SAN FERNANDO;17;Envio saldo los Lunes temprano;1169021207 Pablo;CC;Semanal;Transferencia;Semanal;A;;
+045;ABUELA TOTO;5;Avenida Italia 417, Tigre ;18;;;;DIARIO;EFECTIVO;;;9HS;
+046;JUANCHO 1;12;"Belgrano 40; Los Troncos";19;;1160529885 LOLO;CC;Efectivo;A dia Vencido;;;7hs;2
+047;JUANCHO 2;12;"Alexis Carrel 481; Los Troncos";19;;1149276751 Claudio;CC;Efectivo;A dia Vencido;;;7hs;2
+048;LAURA;5;;7;;Celu Pana;Contado;Diario;Efectivo;;;;
+049;GUERE GUERE RINCON;5;"Williams 910;  Tigre, Rincon";20;Envio saldo los Lunes temprano;1136929633 Sebastian;CC;Semanal;Efectivo;;;7/8hs;1
+050;GUERE GUERE CONFITERIA;5;"Av del Angel T. de Alvear 1925; Don Torcuato";20;Envio saldo los Lunes temprano;1136929633 Sebastian;CC;Semanal;Efectivo;;;11/12hs;1
+051;TUTTO SAN FERNANDO;14;"Constitucion 1148;  San Fernando";21;;11 3502-4484;Contado;Diario;Efectivo;;Mensual;5:30/6hs;1
+052;LA CREMONA;5;"Av Avellaneda 1595;  San Fernando";21;;1127350055 Alejandro;Contado;Diario;Efectivo;;;6/6:30hs;1
+053;DATE EL GUSTO;5;AV DARDO ROCHA 1418;1;;1161633878;Contado;;Efectivo;;;11/12HS;
+054;MED DEL ABUELO;13;"Av Cazon 1217; Tigre";20;Envio saldo los Lunes temprano;1154143077 Norberto;CC;Semanal;Efectivo;;Mensual;7/8hs;1
+055;Kiosko Charly;;;;Paga los Viernes con ese dia inclusive paso saldo antes que vaya ema;Celu Pana;CC;CC;Semanal;;;;
+056;Café Bayone;5;Galeria de los isleños al fondo;18;;11 4070-5235;Contado;Diario;Efectivo;;;9/10hs;2
+057;Rabito;5;;11;;Celu Pana;Contado;Diario;Efectivo;;;;
+058;Los Isleños;5;SARMIENTO 49, TIGRE;15;;1153323884 Pepa;Contado;Diario;Efectivo;;;;
+059;Carlitos;5;;1;;Celu Pana;Contado;Diario;Efectivo;;;;
+060;Union Tigrense;5;ESTRADA 549, TIGRE;1;;1134433515 Lucas;Contado;Diario;Efectivo;;;10/11hs;2
+061;Prisila puerto;5;;14;;Celu Pana;Contado;Diario;Efectivo;;;;
+062;Escuelas;8;;1;;Celu Pana;Contado;Diario;Debito/Efectivo;;;;
+063;Isla Bruma;5;"Paseo Victorica 498; Tigre";1;;1158055802 Bruno;CC;Semanal;MP;Cuando Trasnfiere;B;;
+064;Coke Rowing;;;;;1150024422 Coke;Contado;Diario;Efectivo;;;;
+065;San Fer pan rayado;7;Maipu 2146;3;;;;;;;;12/13hs;3
+066;Noc;5;"Av Cazon (esquina Mitre) ; Tigre";1;;;;;;;;9/10hs;2
+067;Gelay;5;"Av Liniers 1811; Tigre";1;;;;;;;;10/11hs;2
+068;La Cueva;5;Italia 1678;1;;;;;;;;9/10hs;2
+069;Daniel Pan Rayado;5;;3;Martinez Castro 2910 Soldati;1162340920;Contado;Diario;Efectivo;;;;
+070;Parrilla Larralde (Al lado de YPF);5;;1;;;;;;;;;
+071;Sabores Dut Martinez;5;RETIRA MOSTRADOR;9;;;;;;;;;
+072;Jessica Puerto;5;PIZARRO 1330;;;1128318781 JESSICA;;;;;;;
+073;El Paisanito (Monica isla);5;;1;Muelle el paisanito, lancha jilguero 12hs. Solo sabados;1138600570;;mp;;;;;
+074;Agridulce (stefi);5;saenz peña 1255;1;entre sarmiento y guareschi, abre 7:30. todo cocido;1135995965;;;;;;8/9HS;
+075;Bar Marilyn;5;RETIRA MOSTRADOR;1;;;;;;;;RETIRA;
+076;Baruc;8;"Estacion Fluvial; Tigre";1;;11 2896-5860;;;;;;9/10hs;2
+077;ITALIA;13;ITALIA ESQUINA MITRE;;;;;;;;;10/11hs;1
+078;Cristian Selicorni;5;;;;;;;;;;;
+079;Los 3 Chiflados;5;Av Italia 857;;;1164633923;;;;;;;
+080;La Rivera;5;AV DE LA RIVERA 999, TIGRE;;;;;;;;;8/9hs;3
+081;Astor Bar;5;RETIRA MOSTRADOR;;;1133238894;;eft;paga;;;;
+082;hecho con amor;5;bourdieu 595;;;1165301157;;;paga;;;7/8hs;1
+083;HISPANO;5;AV. VICTORICA 50;;;;;;;;;;
+084;Espacio Rivera;5;AV DE LA RIVERA 999, TIGRE;;;;;;;;;;
+085;MARI;7;SARGENTO CABRAL 2084 (ESQ ALBA);;;1123685958;;;;;;8AM;
+086;Almacen de Pan SF;15;9 DE JULIO 1449, SAN FERNANDO;;;;;;;;;;
+087;Berlina;5;Av. Liniers 2466;;;;;;;;;;
+088;La Casona;5;;;;;;;;;;;
+089;Club Nautico Albatros Victoria;5;URUGUAY Y EL RIO, BECCAR;;;;;;;;;6:30/7:30hs;3
+090;Dietetica KATI;5;Bordeiu 411;;;;;;;;;;
+091;Fariña;5;BARTOLOME MITRE 442, TIGRE;;;;;;;;;11/12hs;3
+092;Yaquelin;5;Lugones 1584, entre Williams y Garibaldi;;;;;;;;;;
+093;ANTOJOS CALENTITOS DIEGO;13;COLON 1382, CANAL;;;;;;;;;;
+094;PAN - DIEGO;13;FRENCH 1135, SAN FERNANDO;;;;;;;;;;
+095;Almacen Gaby;12;RETIRA MOSTRADOR;;;;;;;;;;
+096;Javier Hostel;5;RETIRA MOSTRADOR;;;112640-4169;;;;;;;
+097;MORELUCK;5;Carlos Noel 250;;;;;;;;;8:30/9:30hs;3
+098;PATRICIA SANDWICHERIA;5;;;;;;;;;;;
+099;ITU - MICAELA MARIN;10;ITUZAINGO 3626S SAN FERNANDO;;;1125771478;;;;;;;
+100;LA CREMONA 2;5;"AVELLANEDA 2904; LAS TROPAS";;;;;;;;;6:30/7:30hs;3
+101;LA FRONTERA - CAFÉ;5;Sarmiento 77;;;;;;;;;9/10hs;2
+102;El Rey De La Hamburguesa;5;RETIRA;;;1162700502;;efectivo;;;;;
+103;BERLINA - MATIAS;5;RETIRA;;;+54 9 11 3013-6288;;efectivo;;;;;
+104;Sushi Town Martinez;5;;;;;;;;;;;
+105;Almacen Itu;5;;;;;;;;;;;
+106;Boatshare-Amarras del Norte;5;Paseo del Arca 39 San Fernando;;;;;;;;;6:30/7:30hs;3
+107;Almacen Colibri;5;Guareschi 79 ;;;;;;;;;;
+108;KANOO - RESTO;5;RETIRAN;;;1151617678;;;;;;;
+109;Lo de Coqui;5;Constitucion 82;;;;;;;;;10/11hs;3
+110;Torres JAI;5;;;;;;;;;;;
+111;HELADERIA TACUARA;5;CONSTITUYENTES 1082, ESQUINA ZAPIOLA;;;1164446311;;;;;;RETIRA;
+112;LA FILATA 2;5;Brandsen 1195 ;;; 11 3113-5483;;;;;;6:30/7:30HS;3
+113;CASA ALBARDON (GUARDERIA);5;LUIS PEREYRA 2, TIGRE;;;1162628432;;;;;;;
+114;EL JEFE ROTISERIA ;5;Constitución 2342, 4 piso A, 1 módulo;;;1125370918;;12HS ABRE;;;;10/11hs;3
+115;PUMA;5;;;;;;;;;;;
+116;GASTON CARMONA;5;RETIRA MOSTRADOR;;;;;;;;;;
+117;PARRILLA DON EMILIO;5;RETIRA MOSTRADOR;;;;;;;;;;
+118;PORTOPANE;5;GUARESCHI 58;;;;;;;;;;
+119;MAREMMA;5;ITALIA 1602;;;;;;;;;11/12hs;2
+120;STURLA;5;;;;;;;;;;;
+121;BREE (house del barrio) ;5;Echeverría 1200, Pacheco;;;TALAR LAGO 1;;;11 3756-2075;;;;
+122;ROMINA;5;Solis 1261;;;;;;;;;8/9hs;2
+123;ELENA - PANADERIA EL TANO;5;Carlos Gardel 157;;;11 6542-2574;;;;;;RETIRA 7hs;
+124;HURLINGHAM;16;Av Arturo Jauretche 1589;;;1138298097;;;;;;11/12hs;2
+125;ROCHA;13;;;;;;;;;;11/12hs;3
+126;TUTTO VIRREYES;5;avellaneda 2625;;;;;;;;;6:30/7hs;3
+127;PIZERIA LUZ - DANIELA;5;RETIRA MOSTRADOR;;;1134437807;;;;;;6:30/7hs;
+128;LA JUANITA;5;9 DE JULIO Y 3 DE FEBRERO - SAN FERNANDO;;;1123987652;;EFECTIVO;;;;9/10HS;
+129;CHINO  (El Jefe);5;;;;;;;;;;;
+130;GRANJA TRES AMORES - NICO;5;JOSE MARTI 986 (FRENTE AL ACA);;;1151383899;;EFECTIVO;;;;8:30/9HS;
+131;TIENDA PAN RINCON;15;JOSE C PAZ Y 9 DE JULIO;;;;;;;;;06:30;
+132;HACOAJ CATERING;5;BOYERO AL FONDO ;;;1157450336;;ABONA;;;;8/8:30;
+133;MEMENA HELADE - TORCUA;5;ALVEAR 2423 - TORCUATO MALL ;;;1152496599;;ABONA;;;;11/13HS;3
+134;JOAQUIN CHINO;16;3 DE FEBRERO 282 (FRENTE A LA FILATA);;;;;;;;;;
+135;PARETO CAFÉ;5;CONSTITUCION 1175;;;;;;;;;;
+136;PAN Y HOJALDRE;5;GARIBALDI 721 RINCON;;;1131436133;;EFECTIVO;;;;6/7AM;
+137;Chapaleo;6;;;;;;;;;;;
+138;ZI TEREZA;5;Av. Italia 1579;;;47310425;;;;;;9hs;
+139;TIGRE MARKET 2;5;ROCHA 786;;;;;;;;;;
+140;BIG ROGER;5;PUERTO DE FRUTOS;;;1163973967;;;;;;10hs;
+141;COSTA TIGRE ;9;ESTACION FLUVIAL;;;1151171315;;;;;;8/10HS;
+142;BREAK COFFE SHOP;5;Av Peron 501;;;;;;;;;;
+143;Chino Mitre;5;Emilio Mitre 450 SF;;;1137945055;;;;;;8AM;
+144;EL VIEJO ALMACEN - NATALIA;5;GARIBALDI 1591 - RINCON;;RETIRA POR ROCHA ;1153777080;;EFECTIVO;;;;7:30AM;
+145;Tigre Market SANFER;7;Lavalle 1350 San Fernando;;;;;;;;;;
+146;Suma Activa;5;Pedro Guareschi 22;;;;;;;;;;
+147;Timbo Delta;5;LLEVARA A ITALIA 7 AM;;;;;;;;;;
+148;Parrilla cloe;5;Sarmiento 130;;;;;;;;;;
+149;Rincon de Sabores;5;Av. Santa Maria 2841;;;;;;;;;8/9hs;
+150;BRUNE PASTELERIA;5;AV. Agustin garcia 6385 -  local 20;;RETIRA POR ROCHA;1168130507;;ABONA;;;;9:30HS;
+151;TOTO ROSALES;5;REITRA POR ROCHA;;REITRA POR ROCHA;1130054989;;CC;EFECT;SI, SUMARLE 21%;;;
+152;ISLA CENTENARIO;5;AMARRA PUBLICA HUGO CARRIL;;;1169911322;;ABONA;EEECT;;;;
+153;Brazzi Escuelas;12;ITUZAINGO 1876, SAN FERNANDO;17;Envio saldo los Lunes temprano;1169021207 Pablo;CC;Semanal;Transferencia;Semanal;A;;
+154;LA AMISTAD ;5;GUEMES 3119, ESQ IRALA;;;11-5796-7954;;ABONA;;;;8/9HS;
+155;LILIANA BEATRIZ;5;MONTES DE OCA 464;;;11-3490-6493;CC;SEMANAL;TRANSFERENCIA;FACTURA A 27-12141725-7;;8HS;
+156;DAMIAN CIRO;;URUGUAY 771, TIGRE;;;11-6460-4355;CC;SEMANAL;;;;;
+157;POMPEYA PUERTO;10;SARMIENTO 160, LOCAL 172;;;11-6336-2559;CC;SEMANAL;;;;9/10HS;
+200;VILLA TERRA;17;;;;;;;;;;;
+900;Gaston;5;;1;;;;;;;;;
+901;Federico;4;;0;;;;;;;;;
+902;Alan;4;;0;;;;;;;;;
+903;Angel;4;;0;;;;;;;;;
+904;Gabriel Jerez;4;;0;;;;;;;;;
+905;Gabriel R;4;;0;;;;;;;;;
+906;Maxi;4;;0;;;;;;;;;
+907;Juan P;4;;0;;;;;;;;;
+908;Juan F;4;;0;;;;;;;;;
+909;Sergio;4;;0;;;;;;;;;
+910;Florencia;4;;0;;;;;;;;;
+911;Sebastian Soriano;5;;1;;;;;;;;;
+912;Agustin (Gusti);5;;1;;;;;;;;;
+913;Agustina;4;;0;;;;;;;;;
+914;Alejandra;4;;0;;;;;;;;;
+915;Abril;4;;0;;;;;;;;;
+916;Lolo;4;;0;;;;;;;;;
+917;Facundo ;4;;0;;;;;;;;;
+918;Ricardo;4;;0;;;;;;;;;
+919;Aron;4;;0;;;;;;;;;
+920;;;;;;;;;;;;;
+921;;;;;;;;;;;;;
+922;;;;;;;;;;;;;
+923;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;
+;;;;;;;;;;;;;

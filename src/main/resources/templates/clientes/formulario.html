@@ -2,7 +2,6 @@
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <!-- Título dinámico: cambia si estamos creando o editando -->
     <title th:text="${cliente.id == null ? 'Nuevo Cliente' : 'Editar Cliente'}">Formulario de Cliente</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -23,7 +22,7 @@
                     <a th:href="@{/cliente/panel}" class="text-blue-600 hover:text-blue-800">Rocha</a>
                 </div>
                 <div class="flex items-center space-x-4">
-                    <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold"></span>!</span>
+                    <span class="hidden sm:block">¡Hola, <span id="userNameHeader" class="font-semibold">Usuario</span>!</span>
                     <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
                         <span class="text-xl">&#128682;</span>
                         <span>Cerrar Sesión</span>
@@ -35,38 +34,86 @@
 
     <!-- Main Content -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="bg-white p-6 rounded-xl shadow-md max-w-3xl mx-auto">
+        <div class="bg-white p-8 rounded-xl shadow-md max-w-4xl mx-auto">
             <h1 class="text-3xl font-bold mb-6" th:text="${cliente.id == null ? 'Registrar Nuevo Cliente' : 'Editar Cliente'}"></h1>
 
-            <!-- El formulario enviará los datos a /clientes/guardar usando el método POST -->
-            <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post" class="space-y-4">
-
-                <!-- Campo oculto para el ID. Es crucial para que Spring sepa si es un objeto nuevo o uno a actualizar. -->
+            <form th:action="@{/clientes/guardar}" th:object="${cliente}" method="post" class="space-y-6">
                 <input type="hidden" th:field="*{id}"/>
 
-                <div>
-                    <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="nombre" th:field="*{nombre}" required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                    <!-- Columna Izquierda -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="codigo" class="block text-sm font-medium text-gray-700">Código de Cliente</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="codigo" th:field="*{codigo}" required>
+                        </div>
+                        <div>
+                            <label for="razonSocial" class="block text-sm font-medium text-gray-700">Razón Social / Comercio</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="razonSocial" th:field="*{razonSocial}" required>
+                        </div>
+                        <div>
+                            <label for="nombreCompleto" class="block text-sm font-medium text-gray-700">Nombre y Apellido del Contacto</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="nombreCompleto" th:field="*{nombreCompleto}">
+                        </div>
+                        <div>
+                            <label for="domicilio" class="block text-sm font-medium text-gray-700">Domicilio</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="domicilio" th:field="*{domicilio}">
+                        </div>
+                        <div>
+                            <label for="localidad" class="block text-sm font-medium text-gray-700">Localidad</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="localidad" th:field="*{localidad}">
+                        </div>
+                        <div>
+                            <label for="cuit" class="block text-sm font-medium text-gray-700">CUIT</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="cuit" th:field="*{cuit}">
+                        </div>
+                        <div>
+                            <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="telefono" th:field="*{telefono}">
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="listaPrecioExcel" class="block text-sm font-medium text-gray-700">Lista de Precios (Excel)</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="listaPrecioExcel" th:field="*{listaPrecioExcel}">
+                        </div>
+                        <div>
+                            <label for="listaPrecioGas" class="block text-sm font-medium text-gray-700">Lista de Precios (Gas)</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="listaPrecioGas" th:field="*{listaPrecioGas}">
+                        </div>
+                        <div>
+                            <label for="formaDePago" class="block text-sm font-medium text-gray-700">Forma de Pago</e-label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="formaDePago" th:field="*{formaDePago}">
+                        </div>
+                        <div>
+                            <label for="frecuenciaDePago" class="block text-sm font-medium text-gray-700">Frecuencia de Pago</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="frecuenciaDePago" th:field="*{frecuenciaDePago}">
+                        </div>
+                        <div>
+                            <label for="tipoFactura" class="block text-sm font-medium text-gray-700">Tipo de Factura (A, B, C)</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="tipoFactura" th:field="*{tipoFactura}">
+                        </div>
+                        <div>
+                            <label for="horarioEntrega" class="block text-sm font-medium text-gray-700">Horario de Entrega</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="horarioEntrega" th:field="*{horarioEntrega}">
+                        </div>
+                        <div>
+                            <label for="reparto" class="block text-sm font-medium text-gray-700">Día/s de Reparto</label>
+                            <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="reparto" th:field="*{reparto}">
+                        </div>
+                    </div>
                 </div>
 
-                <div>
-                    <label for="direccion" class="block text-sm font-medium text-gray-700">Dirección</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="direccion" th:field="*{direccion}">
+                <!-- Campo de Comentarios -->
+                <div class="pt-4">
+                    <label for="comentarios" class="block text-sm font-medium text-gray-700">Comentarios</label>
+                    <textarea class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="comentarios" th:field="*{comentarios}" rows="4"></textarea>
                 </div>
 
-                <div>
-                    <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="telefono" th:field="*{telefono}">
-                </div>
-
-                <div>
-                    <label for="cuit" class="block text-sm font-medium text-gray-700">CUIT</label>
-                    <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2" id="cuit" th:field="*{cuit}">
-                </div>
-
-                <!-- Aquí podríamos añadir la lógica para asociar un Usuario, pero lo dejamos para más adelante -->
-
-                <div class="flex justify-end space-x-4">
+                <div class="flex justify-end space-x-4 pt-4">
                     <button type="submit" class="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors">Guardar Cliente</button>
                     <a th:href="@{/clientes}" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors">Volver a la Lista</a>
                 </div>
@@ -75,15 +122,6 @@
         </div>
     </main>
 </div>
-
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', () => {
-        const userNameHeader = document.getElementById('userNameHeader');
-        if (userNameHeader) {
-            userNameHeader.textContent = [[${cliente.nombre}]] ? [[${cliente.nombre}]].split(' ')[0] : 'Usuario';
-        }
-    });
-</script>
 
 </body>
 </html>

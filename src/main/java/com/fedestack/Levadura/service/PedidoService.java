@@ -33,6 +33,8 @@ public class PedidoService {
     private ClienteRepository clienteRepository;
     @Autowired
     private ProductoRepository productoRepository;
+    @Autowired
+    private ProductoService productoService;
 
     public List<Pedido> getAllPedidos() {
         return pedidoRepository.findAll();
@@ -104,8 +106,16 @@ public class PedidoService {
             for (DetallePedido detalle : detalles) {
                 Producto producto = productoRepository.findById(detalle.getProducto().getId())
                         .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-                detalle.setPrecioCongelado(producto.getPrecioUnitario());
-                totalPedido = totalPedido.add(producto.getPrecioUnitario().multiply(new BigDecimal(detalle.getCantidad())));
+
+                // Obtener la lista de precios del cliente
+                Cliente cliente = pedido.getCliente();
+                if (cliente == null || cliente.getListaPrecioExcel() == null) {
+                    throw new IllegalStateException("El cliente o su lista de precios Excel no están definidos para el pedido.");
+                }
+                BigDecimal precioUnitario = productoService.getPrecioForProductoAndLista(producto, cliente.getListaPrecioExcel());
+
+                detalle.setPrecioCongelado(precioUnitario);
+                totalPedido = totalPedido.add(precioUnitario.multiply(new BigDecimal(detalle.getCantidad())));
             }
         }
 

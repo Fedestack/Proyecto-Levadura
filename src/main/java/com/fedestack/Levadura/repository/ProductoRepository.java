@@ -1,6 +1,7 @@
 package com.fedestack.Levadura.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.fedestack.Levadura.model.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
    // cuyo nombre contenga la cadena de texto proporcionada, ignorando mayúsculas/minúsculas.
    // Ejemplo: si searchTerm es "medial", encontrará "Medialuna de Manteca".
    List<Producto> findByNombreContainingIgnoreCase(String searchTerm);
+   Optional<Producto> findByCodigo(String codigo);
 }

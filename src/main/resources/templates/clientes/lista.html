@@ -44,22 +44,22 @@
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Razón Social</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre Contacto</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUIT</th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Localidad</th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                 <!-- Iteramos sobre la lista de clientes que pasamos desde el controlador -->
                 <tr th:each="cliente : ${clientes}">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${cliente.id}"></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.nombre}"></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.direccion}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900" th:text="${cliente.codigo}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.razonSocial}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.nombreCompleto}"></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.telefono}"></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.cuit}"></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500" th:text="${cliente.localidad}"></td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <!-- Enlace para editar -->
                         <a th:href="@{/clientes/editar/{id}(id=${cliente.id})}" class="text-indigo-600 hover:text-indigo-900">Editar</a>

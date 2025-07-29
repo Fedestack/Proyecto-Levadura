@@ -47,7 +47,7 @@
                     <a th:href="@{/cliente/panel}" class="text-blue-600 hover:text-blue-800">Rocha</a>
                 </div>
                     <div class="flex items-center space-x-4">
-                        <span class="hidden sm:block">¡Hola, <span class="font-semibold" th:text="${cliente.nombre != null and cliente.nombre.length() > 0 ? cliente.nombre.split(' ')[0] : ''}"></span>!</span>
+                        <span class="hidden sm:block">¡Hola, <span class="font-semibold" th:text="${cliente.nombreCompleto != null and cliente.nombreCompleto.length() > 0 ? cliente.nombreCompleto.split(' ')[0] : ''}"></span>!</span>
                         <button class="flex items-center space-x-2 text-sm text-gray-500 hover:text-blue-600">
                             <span class="text-xl">&#128682;</span>
                             <span>Cerrar Sesión</span>
@@ -66,7 +66,7 @@
                         <!-- Welcome & Last Order Card -->
                         <section class="bg-white p-6 rounded-xl shadow-md">
                             <h1 class="text-3xl font-bold mb-2">Bienvenido/a  <span
-                                    th:text="${cliente.nombreLocal != null and cliente.nombreLocal.length() > 0 ? cliente.nombreLocal : (cliente.nombre != null and cliente.nombre.length() > 0 ? cliente.nombre : '')}"></span></h1>
+                                    th:text="${cliente.razonSocial != null and cliente.razonSocial.length() > 0 ? cliente.razonSocial : (cliente.nombreCompleto != null and cliente.nombreCompleto.length() > 0 ? cliente.nombreCompleto : '')}"></span></h1>
                             <p class="text-gray-600 mb-6">Este es el resumen de tu actividad. Aquí puedes ver tus pedidos y gestionar tu cuenta de forma sencilla.</p>
                             <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-r-lg">
                                 <div class="flex items-center">
@@ -170,22 +170,23 @@
                     <form th:action="@{/cliente/panel/actualizar-datos}" method="post" class="space-y-6">
                         <div>
                             <label for="nombre" class="block text-sm font-bold text-gray-600">Nombre Completo</label>
-                            <input type="text" id="nombre" name="nombre" th:value="${cliente.nombre}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                            <input type="text" id="nombre" name="nombre" th:value="${cliente.nombreCompleto}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                         <div>
                             <label for="nombreLocal" class="block text-sm font-bold text-gray-600">Nombre del Local</label>
-                            <input type="text" id="nombreLocal" name="nombreLocal" th:value="${cliente.nombreLocal}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                            <input type="text" id="nombreLocal" name="nombreLocal" th:value="${cliente.razonSocial}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                          <div>
                             <label for="direccion" class="block text-sm font-bold text-gray-600">Dirección Principal</label>
-                            <input type="text" id="direccion" name="direccion" th:value="${cliente.direccion}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                            <input type="text" id="direccion" name="direccion" th:value="${cliente.domicilio}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
                         </div>
                         <hr>
                          <div>
                             <label for="direccion2" class="block text-sm font-bold text-gray-600">Dirección Secundaria</label>
-                            <input type="text" id="direccion2" name="direccion2" th:value="${cliente.direccion2}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2">
+                            <!-- No hay campo direccion2 en la entidad Cliente. Si se necesita, debe ser añadido. -->
+                            <!-- <input type="text" id="direccion2" name="direccion2" th:value="${cliente.direccion2}" class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2"> -->
                         </div>
                         <hr>
                         <div>
@@ -218,7 +219,7 @@
     <script th:inline="javascript">
         document.addEventListener('DOMContentLoaded', () => {
             const userData = {
-                name: [[${cliente.nombre}]],
+                name: [[${cliente.nombreCompleto}]],
                 email: 'elena.r @email.com', // No tenemos email en Cliente, mantener fijo o eliminar
                 memberSince: '12 de marzo de 2022' // No tenemos fecha de registro en Cliente, mantener fijo o eliminar
             };

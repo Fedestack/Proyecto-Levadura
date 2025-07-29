@@ -11,6 +11,7 @@ import com.fedestack.Levadura.model.Producto;
 import com.fedestack.Levadura.repository.ClienteRepository;
 import com.fedestack.Levadura.repository.ProductoRepository;
 import com.fedestack.Levadura.service.PedidoService;
+import com.fedestack.Levadura.service.ProductoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -38,6 +39,9 @@ public class PedidoController {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private ProductoService productoService;
 
     @Autowired
     private ObjectMapper objectMapper; // Jackson's ObjectMapper
@@ -68,7 +72,13 @@ public class PedidoController {
                 DetallePedido detalle = new DetallePedido();
                 detalle.setProducto(producto);
                 detalle.setCantidad(dto.getCantidad());
-                detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual
+                // Para el formulario de nuevo pedido, asumimos que el cliente es el primero de la lista
+                // o el que se seleccione en el futuro. Por ahora, tomamos el primer cliente para obtener su lista de precios.
+                // Esto es una simplificación para que compile, la lógica real de selección de cliente
+                // y su lista de precios debería venir del frontend.
+                Cliente clienteParaPrecio = clienteRepository.findAll().stream().findFirst()
+                        .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos para obtener la lista de precios."));
+                detalle.setPrecioCongelado(productoService.getPrecioForProductoAndLista(producto, clienteParaPrecio.getListaPrecioExcel())); // Usamos el precio actual
                 detalles.add(detalle);
             }
             pedido.setDetalles(detalles);
@@ -151,10 +161,18 @@ public class PedidoController {
             DetallePedido detalle = new DetallePedido();
             detalle.setProducto(producto);
             detalle.setCantidad(dto.getCantidad());
-            detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual para la previsualización
+            // Obtener la lista de precios del cliente
+            Cliente clienteParaPrecio = clienteRepository.findById(finalClienteId)
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + finalClienteId));
+            if (clienteParaPrecio.getListaPrecioExcel() == null) {
+                throw new IllegalStateException("El cliente no tiene una lista de precios Excel asignada.");
+            }
+            BigDecimal precioUnitario = productoService.getPrecioForProductoAndLista(producto, clienteParaPrecio.getListaPrecioExcel());
+
+            detalle.setPrecioCongelado(precioUnitario); // Usamos el precio actual para la previsualización
             detalles.add(detalle);
             BigDecimal cantidad = new BigDecimal(dto.getCantidad());
-            total = total.add(producto.getPrecioUnitario().multiply(cantidad));
+            total = total.add(precioUnitario.multiply(cantidad));
         }
 
         pedidoDeConfirmacion.setDetalles(detalles);
@@ -219,10 +237,18 @@ public class PedidoController {
             DetallePedido detalle = new DetallePedido();
             detalle.setProducto(producto);
             detalle.setCantidad(dto.getCantidad());
-            detalle.setPrecioCongelado(producto.getPrecioUnitario()); // Usamos el precio actual para la previsualización
+            // Obtener la lista de precios del cliente
+            Cliente clienteParaPrecio = clienteRepository.findById(finalClienteId)
+                    .orElseThrow(() -> new RuntimeException("Cliente no encontrado con ID: " + finalClienteId));
+            if (clienteParaPrecio.getListaPrecioExcel() == null) {
+                throw new IllegalStateException("El cliente no tiene una lista de precios Excel asignada.");
+            }
+            BigDecimal precioUnitario = productoService.getPrecioForProductoAndLista(producto, clienteParaPrecio.getListaPrecioExcel());
+
+            detalle.setPrecioCongelado(precioUnitario); // Usamos el precio actual para la previsualización
             detalles.add(detalle);
             BigDecimal cantidad = new BigDecimal(dto.getCantidad());
-            total = total.add(producto.getPrecioUnitario().multiply(cantidad));
+            total = total.add(precioUnitario.multiply(cantidad));
         }
 
         pedidoDeConfirmacion.setDetalles(detalles);

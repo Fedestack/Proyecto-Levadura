@@ -86,7 +86,7 @@
             // Placeholder for user name in header
             const userNameHeader = document.getElementById('userNameHeader');
             if (userNameHeader) {
-                userNameHeader.textContent = [[${cliente.nombre}]] ? [[${cliente.nombre}]].split(' ')[0] : 'Usuario';
+                userNameHeader.textContent = [[${cliente.nombreCompleto}]] ? [[${cliente.nombreCompleto}]].split(' ')[0] : 'Usuario';
             }
         });
     </script>
