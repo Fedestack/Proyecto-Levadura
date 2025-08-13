@@ -107,12 +107,73 @@ public class PedidoService {
                 Producto producto = productoRepository.findById(detalle.getProducto().getId())
                         .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-                // Obtener la lista de precios del cliente
+                // Obtener el precio unitario según la lógica de precios por cliente
                 Cliente cliente = pedido.getCliente();
-                if (cliente == null || cliente.getListaPrecioExcel() == null) {
-                    throw new IllegalStateException("El cliente o su lista de precios Excel no están definidos para el pedido.");
+                BigDecimal precioUnitario = null;
+
+                if (cliente != null && cliente.getRazonSocial() != null) {
+                    String nombreComercio = cliente.getRazonSocial().toUpperCase(); // Re-added this line
+                    switch (nombreComercio) {
+                        case "AMODIL":
+                            precioUnitario = producto.getAmodil();
+                            break;
+                        case "EL TANO": // Note: DB column is EL_TANO, but CSV has "EL TANO"
+                            precioUnitario = producto.getElTano();
+                            break;
+                        case "VIVANCO":
+                            precioUnitario = producto.getVivanco();
+                            break;
+                        case "GLORIAS":
+                            precioUnitario = producto.getGlorias();
+                            break;
+                        case "POMPEYA":
+                            precioUnitario = producto.getPompeya();
+                            break;
+                        case "BRAZZI":
+                            precioUnitario = producto.getBrazzi();
+                            break;
+                        case "JUANCHOS":
+                            precioUnitario = producto.getJuanchos();
+                            break;
+                        case "GUERE GUERE/ABUELO": // Note: DB column is GUERE_GUERE_ABUELO
+                            precioUnitario = producto.getGuereGuereAbuelo();
+                            break;
+                        case "TUTTO SAN FER": // Note: DB column is TUTTO_SAN_FER
+                            precioUnitario = producto.getTuttoSanFer();
+                            break;
+                        case "RINCON / LINIERS": // Note: DB column is RINCON_LINIERS
+                            precioUnitario = producto.getRinconLiniers();
+                            break;
+                        case "JOAQUIN CHINO": // Note: DB column is JOAQUIN_CHINO
+                            precioUnitario = producto.getJoaquinChino();
+                            break;
+                        case "VILLA TERRA": // Note: DB column is VILLA_TERRA
+                            precioUnitario = producto.getVillaTerra();
+                            break;
+                        case "MINORISTA": // If the client is explicitly "Minorista"
+                            precioUnitario = producto.getMinorista();
+                            break;
+                        
+                        default:
+                            // Si el nombre del comercio no coincide con una columna específica,
+                            // o si la columna específica es NULL, usar el precio Mayorista.
+                            precioUnitario = producto.getMayorista();
+                            break;
+                    }
                 }
-                BigDecimal precioUnitario = productoService.getPrecioForProductoAndLista(producto, cliente.getListaPrecioExcel());
+
+                // Fallback a Mayorista si el precio específico es nulo o si el cliente no tiene nombre de comercio
+                if (precioUnitario == null || precioUnitario.compareTo(BigDecimal.ZERO) == 0) {
+                    precioUnitario = producto.getMayorista();
+                }
+
+                
+
+                // Si aún es nulo, lanzar una excepción o asignar un valor por defecto (ej. 0)
+                if (precioUnitario == null) {
+                    log.warn("No se pudo determinar el precio para el producto {} (código: {}) para el cliente {}. Usando 0.00.", producto.getNombre(), producto.getCodigo(), cliente.getRazonSocial());
+                    precioUnitario = BigDecimal.ZERO;
+                }
 
                 detalle.setPrecioCongelado(precioUnitario);
                 totalPedido = totalPedido.add(precioUnitario.multiply(new BigDecimal(detalle.getCantidad())));

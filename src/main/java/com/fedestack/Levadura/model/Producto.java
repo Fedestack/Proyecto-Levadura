@@ -3,8 +3,6 @@ package com.fedestack.Levadura.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
@@ -18,17 +16,52 @@ public class Producto {
     private String codigo;
 
     @Column(nullable = false)
-    private String nombre; // Corresponde a "Detalle Articulo"
+    private String nombre;
 
-    private String rubro; // Corresponde a "Rubro"
+    private String rubro;
 
-    private String unidad; // Corresponde a "Unidad" en el CSV
+    private String unidad;
 
-    @Column(precision = 10, scale = 2)
-    private BigDecimal costoTotal; // El costo interno del producto
+    @Column(name = "Minorista", precision = 10, scale = 2)
+    private BigDecimal minorista;
 
-    // Un producto tiene muchos precios. Si se borra el producto, se borran sus precios.
-    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Precio> precios = new ArrayList<>();
+    @Column(name = "Mayorista", precision = 10, scale = 2)
+    private BigDecimal mayorista;
+
+    @Column(name = "AMODIL", precision = 10, scale = 2)
+    private BigDecimal amodil;
+
+    @Column(name = "EL_TANO", precision = 10, scale = 2)
+    private BigDecimal elTano;
+
+    @Column(name = "VIVANCO", precision = 10, scale = 2)
+    private BigDecimal vivanco;
+
+    @Column(name = "GLORIAS", precision = 10, scale = 2)
+    private BigDecimal glorias;
+
+    @Column(name = "POMPEYA", precision = 10, scale = 2)
+    private BigDecimal pompeya;
+
+    @Column(name = "BRAZZI", precision = 10, scale = 2)
+    private BigDecimal brazzi;
+
+    @Column(name = "JUANCHOS", precision = 10, scale = 2)
+    private BigDecimal juanchos;
+
+    @Column(name = "GUERE_GUERE_ABUELO", precision = 10, scale = 2)
+    private BigDecimal guereGuereAbuelo;
+
+    @Column(name = "TUTTO_SAN_FER", precision = 10, scale = 2)
+    private BigDecimal tuttoSanFer;
+
+    @Column(name = "RINCON_LINIERS", precision = 10, scale = 2)
+    private BigDecimal rinconLiniers;
+
+    @Column(name = "JOAQUIN_CHINO", precision = 10, scale = 2)
+    private BigDecimal joaquinChino;
+
+    @Column(name = "VILLA_TERRA", precision = 10, scale = 2)
+    private BigDecimal villaTerra;
 
 }

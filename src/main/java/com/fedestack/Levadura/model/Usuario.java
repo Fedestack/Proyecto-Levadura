@@ -18,4 +18,7 @@ public class Usuario {
    private String password; // Guardaremos la contraseña hasheada, no en texto plano
 
    private String rol; // Ej: "ROLE_CLIENTE", "ROLE_ADMIN"
+
+   @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   private Cliente cliente;
 }

@@ -19,6 +19,12 @@ import org.springframework.web.bind.annotation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.fedestack.Levadura.repository.UsuarioRepository;
+import com.fedestack.Levadura.repository.ListaDePreciosRepository;
+import com.fedestack.Levadura.model.Usuario;
+import com.fedestack.Levadura.model.ListaDePrecios;
+import com.fedestack.Levadura.dto.ProductoDisplayDTO;
+import java.security.Principal;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,6 +52,12 @@ public class PedidoController {
     @Autowired
     private ObjectMapper objectMapper; // Jackson's ObjectMapper
 
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private ListaDePreciosRepository listaDePreciosRepository;
+
     @GetMapping("")
     public String listarPedidos(Model model) {
         List<Pedido> pedidos = pedidoService.getAllPedidos();
@@ -53,12 +65,41 @@ public class PedidoController {
         return "pedidos/lista";
     }
 
-    @RequestMapping("/nuevo")
-    public String mostrarFormularioDeNuevoPedido(@RequestParam(name = "observaciones", required = false) String observaciones,
+    @GetMapping("/nuevo")
+    public String mostrarFormularioDeNuevoPedido(Principal principal,
+                                                 @RequestParam(name = "observaciones", required = false) String observaciones,
                                                  @RequestParam(name = "detallesJson", required = false) String detallesJson,
                                                  Model model) throws IOException {
-        List<Producto> productos = pedidoService.getAllProductos();
-        model.addAttribute("productos", productos);
+
+        Cliente cliente;
+        if (principal != null) {
+            String username = principal.getName();
+            Usuario usuario = usuarioRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+            cliente = usuario.getCliente();
+            if (cliente == null) {
+                throw new RuntimeException("El usuario logueado no tiene un cliente asociado.");
+            }
+        } else {
+            // Si no hay usuario logueado, usar un cliente por defecto (ej. el primero o un cliente 'público')
+            // O lanzar una excepción si el acceso sin cliente no está permitido.
+            cliente = clienteRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos y no hay usuario logueado."));
+        }
+
+        // Obtener todos los productos y calcular el precio específico para el cliente
+        List<Producto> allProducts = pedidoService.getAllProductos();
+        List<ProductoDisplayDTO> productosParaDisplay = new ArrayList<>();
+        for (Producto p : allProducts) {
+            ProductoDisplayDTO dto = new ProductoDisplayDTO();
+            dto.setId(p.getId());
+            dto.setCodigo(p.getCodigo());
+            dto.setNombre(p.getNombre());
+            dto.setUnidad(p.getUnidad());
+            dto.setPrecioUnitario(p.getMayorista()); // Usar precio Mayorista por defecto
+            productosParaDisplay.add(dto);
+        }
+        model.addAttribute("productos", productosParaDisplay);
 
         Pedido pedido = new Pedido();
         if (observaciones != null && detallesJson != null) {
@@ -72,13 +113,9 @@ public class PedidoController {
                 DetallePedido detalle = new DetallePedido();
                 detalle.setProducto(producto);
                 detalle.setCantidad(dto.getCantidad());
-                // Para el formulario de nuevo pedido, asumimos que el cliente es el primero de la lista
-                // o el que se seleccione en el futuro. Por ahora, tomamos el primer cliente para obtener su lista de precios.
-                // Esto es una simplificación para que compile, la lógica real de selección de cliente
-                // y su lista de precios debería venir del frontend.
-                Cliente clienteParaPrecio = clienteRepository.findAll().stream().findFirst()
-                        .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos para obtener la lista de precios."));
-                detalle.setPrecioCongelado(productoService.getPrecioForProductoAndLista(producto, clienteParaPrecio.getListaPrecioExcel())); // Usamos el precio actual
+                // Usar el precio ya calculado para el cliente logueado
+                BigDecimal precioCongelado = productoService.getPrecioForProductoAndLista(producto, cliente.getListaPrecioExcel());
+                detalle.setPrecioCongelado(precioCongelado);
                 detalles.add(detalle);
             }
             pedido.setDetalles(detalles);
@@ -92,16 +129,48 @@ public class PedidoController {
     }
 
     @GetMapping("/editar/{id}")
-    public String mostrarFormularioDeEditarPedido(HttpServletRequest request, Model model) {
+    public String mostrarFormularioDeEditarPedido(Principal principal, HttpServletRequest request, Model model) {
         Map<String, String> pathVariables = (Map<String, String>) request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
         Long id = Long.valueOf(pathVariables.get("id"));
         Pedido pedido = pedidoService.getPedidoById(id)
                 .orElseThrow(() -> new IllegalArgumentException("ID de Pedido no válido:" + id));
-        List<Producto> productos = pedidoService.getAllProductos();
+
+        // Obtener el cliente asociado al usuario logueado
+        Cliente cliente;
+        if (principal != null) {
+            String username = principal.getName();
+            Usuario usuario = usuarioRepository.findByEmail(username)
+                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + username));
+            cliente = usuario.getCliente();
+            if (cliente == null) {
+                throw new RuntimeException("El usuario logueado no tiene un cliente asociado.");
+            }
+        } else {
+            // Si no hay usuario logueado, usar un cliente por defecto (ej. el primero o un cliente 'público')
+            // O lanzar una excepción si el acceso sin cliente no está permitido.
+            cliente = clienteRepository.findAll().stream().findFirst()
+                    .orElseThrow(() -> new RuntimeException("No hay clientes en la base de datos y no hay usuario logueado."));
+        }
+
+        // Obtener todos los productos y calcular el precio específico para el cliente
+        List<Producto> allProducts = pedidoService.getAllProductos();
+        List<ProductoDisplayDTO> productosParaDisplay = new ArrayList<>();
+        for (Producto p : allProducts) {
+            ProductoDisplayDTO dto = new ProductoDisplayDTO();
+            dto.setId(p.getId());
+            dto.setCodigo(p.getCodigo());
+            dto.setNombre(p.getNombre());
+            dto.setUnidad(p.getUnidad());
+            dto.setPrecioUnitario(p.getMayorista()); // Usar precio Mayorista por defecto
+            productosParaDisplay.add(dto);
+        }
+        model.addAttribute("productos", productosParaDisplay);
+
         model.addAttribute("pedido", pedido);
-        model.addAttribute("productos", productos);
         return "pedidos/formulario";
     }
+
+    
 
     @GetMapping("/ver/{id}")
     public String verDetallePedido(HttpServletRequest request, Model model) {

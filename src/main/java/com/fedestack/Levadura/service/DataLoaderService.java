@@ -93,7 +93,7 @@ public class DataLoaderService {
                     String codigo = data[0].trim();
                     String rubro = data[1].trim();
                     String nombreProducto = data[2].trim();
-                    String unidad = ""; // Assuming 'unidad' is not explicitly in the CSV, or needs to be derived
+                    String unidad = data[17].trim(); // Read 'unidad' from CSV column 17
 
                     // Check for duplicate product codes (due to repeated data in CSV)
                     Optional<Producto> existingProducto = productoRepository.findByCodigo(codigo);
@@ -104,29 +104,12 @@ public class DataLoaderService {
                         producto.setRubro(rubro);
                         producto.setNombre(nombreProducto);
                         producto.setUnidad(unidad); // Update unit if it's derived
-                        // Update costoTotal if it's in the CSV and needs to be updated
-                        // For now, we'll assume costoTotal is handled later or not updated from this CSV
-                    } else {
+                        } else {
                         producto = new Producto();
                         producto.setCodigo(codigo);
                         producto.setRubro(rubro);
                         producto.setNombre(nombreProducto);
                         producto.setUnidad(unidad); // Set unit
-                        // Set costoTotal if it's in the CSV
-                    }
-
-                    // Parse costoTotal from the CSV (column 20, 0-indexed)
-                    // The CSV has multiple empty columns before costoTotal, so it's actually column 20 (0-indexed)
-                    // The CSV also has repeated product data at the end, so we need to be careful
-                    // Based on the CSV, Costo Total is in column 20 (0-indexed)
-                    if (data.length > 20 && !data[20].trim().isEmpty()) {
-                        try {
-                            String costoTotalStr = data[20].trim().replace("$", "").replace(" ", "").replace(".", "").replace(",", ".");
-                            producto.setCostoTotal(new BigDecimal(costoTotalStr));
-                        } catch (NumberFormatException e) {
-                            System.err.println("Warning: Could not parse costoTotal for product " + codigo + ": " + data[20]);
-                            producto.setCostoTotal(BigDecimal.ZERO);
-                        }
                     }
 
                     producto = productoRepository.save(producto);

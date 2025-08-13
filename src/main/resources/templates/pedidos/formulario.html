@@ -188,7 +188,7 @@
                 const option = document.createElement('option');
                 option.value = product.id;
                 option.textContent = product.nombre;
-                option.dataset.precio = product.precioUnitario;
+                option.dataset.precioUnitario = product.precioUnitario;
                 option.dataset.unidad = product.unidad;
                 productoSelector.appendChild(option);
             });
@@ -212,7 +212,7 @@
                     const resultItem = document.createElement('div');
                     resultItem.textContent = product.nombre;
                     resultItem.dataset.productId = product.id;
-                    resultItem.dataset.precio = product.precioUnitario;
+                    resultItem.dataset.precioUnitario = product.precioUnitario;
                     resultItem.dataset.unidad = product.unidad;
                     resultItem.addEventListener('click', function() {
                         // Set the selected product in the main selector
@@ -241,7 +241,7 @@
             newRow.className = 'border-b last:border-b-0';
             newRow.innerHTML = `
                 <td class="py-3 px-4">${detail.productoNombre}</td>
-                <td class="py-3 px-4">${detail.cantidad} ${detail.unidad}</td>
+                <td class="py-3 px-4">${detail.cantidad} ${detail.unidad || ''}</td>
                 <td class="py-3 px-4">$${detail.precioUnitario.toFixed(2)}</td>
                 <td class="py-3 px-4 text-right">$${(detail.cantidad * detail.precioUnitario).toFixed(2)}</td>
                 <td class="py-3 px-4 text-center">
@@ -287,7 +287,7 @@
         function updateUnidadDisplay() {
             const selectedOption = productoSelector.options[productoSelector.selectedIndex];
             if (selectedOption && selectedOption.dataset.unidad) {
-                unidadDisplay.textContent = `Unidad: ${selectedOption.dataset.unidad}`;
+                unidadDisplay.textContent = `Unidad: ${selectedOption.dataset.unidad || ''}`;
             } else {
                 unidadDisplay.textContent = '';
             }
@@ -320,7 +320,7 @@
                 const newDetail = {
                     productoId: productoId,
                     cantidad: cantidad,
-                    precioUnitario: parseFloat(selectedOption.dataset.precio),
+                    precioUnitario: parseFloat(selectedOption.dataset.precioUnitario),
                     unidad: selectedOption.dataset.unidad,
                     productoNombre: selectedOption.text
                 };
