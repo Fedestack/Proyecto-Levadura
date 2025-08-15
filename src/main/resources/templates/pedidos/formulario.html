@@ -189,7 +189,7 @@
                 option.value = product.id;
                 option.textContent = product.nombre;
                 option.dataset.precioUnitario = product.precioUnitario;
-                option.dataset.unidad = product.unidad;
+                option.dataset.unidad = product.unidad || '';
                 productoSelector.appendChild(option);
             });
             updateUnidadDisplay(); // Update unit display after populating
@@ -213,7 +213,7 @@
                     resultItem.textContent = product.nombre;
                     resultItem.dataset.productId = product.id;
                     resultItem.dataset.precioUnitario = product.precioUnitario;
-                    resultItem.dataset.unidad = product.unidad;
+                    resultItem.dataset.unidad = product.unidad || '';
                     resultItem.addEventListener('click', function() {
                         // Set the selected product in the main selector
                         productoSelector.value = product.id;
@@ -264,7 +264,7 @@
                             productoId: Number(productData.id),
                             cantidad: d.cantidad,
                             precioUnitario: parseFloat(productData.precioUnitario),
-                            unidad: productData.unidad,
+                            unidad: productData.unidad || '',
                             productoNombre: productData.nombre
                         };
                         addDetailRow(detail);
@@ -321,7 +321,7 @@
                     productoId: productoId,
                     cantidad: cantidad,
                     precioUnitario: parseFloat(selectedOption.dataset.precioUnitario),
-                    unidad: selectedOption.dataset.unidad,
+                    unidad: selectedOption.dataset.unidad || '',
                     productoNombre: selectedOption.text
                 };
                 addDetailRow(newDetail);
